@@ -1,0 +1,9 @@
+# AUTO-GENERATED FILES
+._*
+.DS_Store
+.idea/
+*.iml
+
+# COMPILED CODE
+target/
+*.class
