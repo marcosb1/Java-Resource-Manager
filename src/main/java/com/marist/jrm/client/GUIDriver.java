@@ -8,6 +8,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -74,11 +75,11 @@ public class GUIDriver extends Application {
         applicationsTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         TableColumn<Application, String> applicationNameCol = new TableColumn<>("Name");
-        applicationNameCol.setMinWidth(200);
+        applicationNameCol.setMinWidth(300);
         applicationNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<Application, String> applicationStatusCol = new TableColumn<>("Status");
-        applicationStatusCol.setMinWidth(200);
+        applicationStatusCol.setMinWidth(300);
         applicationStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         TableView<Application> applicationsTable = new TableView<>();
@@ -92,19 +93,19 @@ public class GUIDriver extends Application {
         processesTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         TableColumn<Process, String> processNameCol = new TableColumn<>("Process Name");
-        processNameCol.setMinWidth(200);
+        processNameCol.setMinWidth(150);
         processNameCol.setCellValueFactory(new PropertyValueFactory<>("processName"));
 
         TableColumn<Process, String> memoryCol = new TableColumn<>("Memory");
-        memoryCol.setMinWidth(200);
+        memoryCol.setMinWidth(150);
         memoryCol.setCellValueFactory(new PropertyValueFactory<>("memory"));
 
         TableColumn<Process, String> threadCountCol = new TableColumn<>("Thread Count");
-        threadCountCol.setMinWidth(200);
+        threadCountCol.setMinWidth(150);
         threadCountCol.setCellValueFactory(new PropertyValueFactory<>("threadCount"));
 
         TableColumn<Process, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setMinWidth(200);
+        descriptionCol.setMinWidth(150);
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
 
         TableView<Process> processTable = new TableView<>();
@@ -117,18 +118,45 @@ public class GUIDriver extends Application {
         performanceTab.setClosable(false);
         performanceTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
+        //      CPU Usage Line Chart
         final NumberAxis cpuXAxis = new NumberAxis();
         final NumberAxis cpuYAxis = new NumberAxis();
         this.cpuUsageLineChart = new LineChart<Number, Number>(cpuXAxis, cpuYAxis);
         this.cpuUsageLineChart.setTitle("CPU Usage");
 
+        //      Memory Usage Line Chart
         final NumberAxis memoryXAxis = new NumberAxis();
         final NumberAxis memoryYAxis = new NumberAxis();
         this.memoryUsageLineChart = new LineChart<Number, Number>(memoryXAxis, memoryYAxis);
         this.memoryUsageLineChart.setTitle("Memory Usage");
 
+        //      Data Panels Line Chart
+        HBox performancePanelsLayout = new HBox();
+
+        HBox totalMemoryBox = new HBox(new Label("Total Memory: "), new Label());
+        HBox memoryUsedBox = new HBox(new Label("Memory Used: "), new Label());
+        HBox memoryAvailable = new HBox(new Label("Memory Available: "), new Label());
+        VBox physicalMemoryComponents = new VBox();
+        physicalMemoryComponents.getChildren().addAll(totalMemoryBox, memoryUsedBox, memoryAvailable);
+        TitledPane physicalMemoryViewer = new TitledPane("Physical Memory", physicalMemoryComponents);
+        physicalMemoryViewer.setMinWidth(300);
+        physicalMemoryViewer.setMinHeight(200);
+        physicalMemoryViewer.setCollapsible(false);
+
+        HBox threadsBox = new HBox(new Label("Threads: "), new Label());
+        HBox processesBox = new HBox(new Label("Processes: "), new Label());
+        HBox upTimeBox = new HBox(new Label("Up Time: "), new Label());
+        VBox systemViewerComponents = new VBox();
+        systemViewerComponents.getChildren().addAll(threadsBox, processesBox, upTimeBox);
+        TitledPane systemViewer = new TitledPane("System", systemViewerComponents);
+        systemViewer.setMinWidth(300);
+        systemViewer.setMinHeight(200);
+        systemViewer.setCollapsible(false);
+
+        performancePanelsLayout.getChildren().addAll(physicalMemoryViewer, systemViewer);
+
         VBox performanceLayout = new VBox();
-        performanceLayout.getChildren().addAll(this.cpuUsageLineChart, this.memoryUsageLineChart);
+        performanceLayout.getChildren().addAll(this.cpuUsageLineChart, this.memoryUsageLineChart, performancePanelsLayout);
 
         performanceTab.setContent(performanceLayout);
         tabPane.getTabs().add(performanceTab);
