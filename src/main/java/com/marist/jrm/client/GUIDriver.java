@@ -3,6 +3,8 @@ package com.marist.jrm.client;
 import com.marist.jrm.client.components.ConfirmBox;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -15,6 +17,8 @@ public class GUIDriver extends Application {
 
     private Stage applicationWindow;
     private BorderPane layout;
+    private LineChart<Number, Number> cpuUsageLineChart;
+    private LineChart<Number, Number> memoryUsageLineChart;
 
     public static void main(String[] args) {
         launch(args);
@@ -63,6 +67,26 @@ public class GUIDriver extends Application {
 
         /* Tab Pane initialization */
         TabPane tabPane = new TabPane();
+
+        // Applications Tab
+        Tab applicationsTab = new Tab("Applications");
+        applicationsTab.setClosable(false);
+        applicationsTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
+
+        TableColumn<Application, String> applicationNameCol = new TableColumn<>("Name");
+        applicationNameCol.setMinWidth(200);
+        applicationNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Application, String> applicationStatusCol = new TableColumn<>("Status");
+        applicationStatusCol.setMinWidth(200);
+        applicationStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        TableView<Application> applicationsTable = new TableView<>();
+        applicationsTable.getColumns().addAll(applicationNameCol, applicationStatusCol);
+        applicationsTab.setContent(applicationsTable);
+        tabPane.getTabs().add(applicationsTab);
+
+        // Processes Tab
         Tab processesTab = new Tab("Processes");
         processesTab.setClosable(false);
         processesTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
@@ -88,9 +112,25 @@ public class GUIDriver extends Application {
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
+        // Performance Tab
         Tab performanceTab = new Tab("Performance");
         performanceTab.setClosable(false);
         performanceTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
+
+        final NumberAxis cpuXAxis = new NumberAxis();
+        final NumberAxis cpuYAxis = new NumberAxis();
+        this.cpuUsageLineChart = new LineChart<Number, Number>(cpuXAxis, cpuYAxis);
+        this.cpuUsageLineChart.setTitle("CPU Usage");
+
+        final NumberAxis memoryXAxis = new NumberAxis();
+        final NumberAxis memoryYAxis = new NumberAxis();
+        this.memoryUsageLineChart = new LineChart<Number, Number>(memoryXAxis, memoryYAxis);
+        this.memoryUsageLineChart.setTitle("Memory Usage");
+
+        VBox performanceLayout = new VBox();
+        performanceLayout.getChildren().addAll(this.cpuUsageLineChart, this.memoryUsageLineChart);
+
+        performanceTab.setContent(performanceLayout);
         tabPane.getTabs().add(performanceTab);
         /* End of Tab Pane initialization */
 
