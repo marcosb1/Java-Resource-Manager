@@ -13,7 +13,7 @@ public class SQLiteDBInit {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:jrmDB.db");
+            c = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
