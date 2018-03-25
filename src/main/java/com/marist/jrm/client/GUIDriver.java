@@ -21,6 +21,13 @@ public class GUIDriver extends Application {
     private LineChart<Number, Number> cpuUsageLineChart;
     private LineChart<Number, Number> memoryUsageLineChart;
 
+    private int totalMemoryValue = 0;
+    private int memoryUsedValue = 0;
+    private int memoryAvailableValue = 0;
+    private int numThreadsValue = 0;
+    private int numProcessesValue = 0;
+    private String upTimeValue = "";
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -133,9 +140,9 @@ public class GUIDriver extends Application {
         //      Data Panels Line Chart
         HBox performancePanelsLayout = new HBox();
 
-        HBox totalMemoryBox = new HBox(new Label("Total Memory: "), new Label());
-        HBox memoryUsedBox = new HBox(new Label("Memory Used: "), new Label());
-        HBox memoryAvailable = new HBox(new Label("Memory Available: "), new Label());
+        HBox totalMemoryBox = new HBox(new Label("Total Memory: "), new Label(this.totalMemoryValue + ""));
+        HBox memoryUsedBox = new HBox(new Label("Memory Used: "), new Label(this.memoryUsedValue + ""));
+        HBox memoryAvailable = new HBox(new Label("Memory Available: "), new Label(this.memoryAvailableValue + ""));
         VBox physicalMemoryComponents = new VBox();
         physicalMemoryComponents.getChildren().addAll(totalMemoryBox, memoryUsedBox, memoryAvailable);
         TitledPane physicalMemoryViewer = new TitledPane("Physical Memory", physicalMemoryComponents);
@@ -143,9 +150,9 @@ public class GUIDriver extends Application {
         physicalMemoryViewer.setMinHeight(200);
         physicalMemoryViewer.setCollapsible(false);
 
-        HBox threadsBox = new HBox(new Label("Threads: "), new Label());
-        HBox processesBox = new HBox(new Label("Processes: "), new Label());
-        HBox upTimeBox = new HBox(new Label("Up Time: "), new Label());
+        HBox threadsBox = new HBox(new Label("Threads: "), new Label(this.numThreadsValue + ""));
+        HBox processesBox = new HBox(new Label("Processes: "), new Label(this.numProcessesValue + ""));
+        HBox upTimeBox = new HBox(new Label("Up Time: "), new Label(this.upTimeValue));
         VBox systemViewerComponents = new VBox();
         systemViewerComponents.getChildren().addAll(threadsBox, processesBox, upTimeBox);
         TitledPane systemViewer = new TitledPane("System", systemViewerComponents);
@@ -181,5 +188,53 @@ public class GUIDriver extends Application {
 
         if (confirmed)
             this.applicationWindow.close();
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setTotalMemoryValue(int newValue) {
+        this.totalMemoryValue = newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setMemoryUsedValue(int newValue) {
+        this.memoryUsedValue = newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setMemoryAvailableValue(int newValue) {
+        this.memoryAvailableValue = newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setNumThreadsValue(int newValue) {
+        this.numThreadsValue = newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setNumProcessesValue(int newValue) {
+        this.numProcessesValue = newValue;
+    }
+
+    /**
+     *
+     * @param newValue
+     */
+    public void setUpTimeValue(String newValue) {
+        this.upTimeValue = newValue;
     }
 }
