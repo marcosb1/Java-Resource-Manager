@@ -1,0 +1,32 @@
+CREATE TABLE APPLICATION(
+   appID INT PRIMARY KEY     NOT NULL,
+   appName           TEXT    NOT NULL,
+   appDescription    TEXT     NOT NULL
+   
+);
+
+CREATE TABLE PROCESS(
+   procID INT PRIMARY KEY     NOT NULL,
+   procAppID           INT    NOT NULL,
+   procMemory    INT     NOT NULL,
+   procThreadCount INT     NOT NULL,
+   FOREIGN KEY(procAppID) REFERENCES APPLICATION(appID)
+);
+
+CREATE TABLE THREAD(
+   threadID INT PRIMARY KEY     NOT NULL,
+   threadProcID           INT    NOT NULL,
+   threadMemory    INT     NOT NULL,
+   FOREIGN KEY(threadProcID) REFERENCES PROCESS(procID)
+);
+
+CREATE TABLE SYSTEM(
+   sysTime INT PRIMARY KEY     NOT NULL,
+   sysCPUUsage           INT    NOT NULL,
+   sysUptime    INT     NOT NULL,
+   sysPhyicalMemory INT     NOT NULL,
+   sysFreeMemory INT     NOT NULL,
+   sysTotalThreads INT     NOT NULL,
+   sysTotalProcesses INT     NOT NULL
+   
+);
