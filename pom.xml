@@ -17,7 +17,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <!-- Build an executable JAR -->
                 <groupId>org.apache.maven.plugins</groupId>
@@ -28,7 +27,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.marist.jrm.systemCall.SystemCallDriver</mainClass>
+                            <mainClass>com.marist.jrm.client.GUIDriver</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -38,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.marist.jrm.systemCall.SystemCallDriver</mainClass>
+                            <mainClass>com.marist.jrm.client.GUIDriver</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

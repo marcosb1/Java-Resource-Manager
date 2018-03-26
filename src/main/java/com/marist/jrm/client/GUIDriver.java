@@ -1,6 +1,8 @@
 package com.marist.jrm.client;
 
 import com.marist.jrm.client.components.ConfirmBox;
+import com.marist.jrm.model.Process;
+import com.marist.jrm.systemCall.SystemCallDriver;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -13,6 +15,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OperatingSystem;
+
+import java.util.ArrayList;
 
 public class GUIDriver extends Application {
 
@@ -27,6 +35,10 @@ public class GUIDriver extends Application {
     private int numThreadsValue = 0;
     private int numProcessesValue = 0;
     private String upTimeValue = "";
+    private ArrayList<Process> processes;
+    private SystemInfo si = new SystemInfo();
+    private HardwareAbstractionLayer hal = si.getHardware();
+    private OperatingSystem os = si.getOperatingSystem();
 
     public static void main(String[] args) {
         launch(args);
@@ -119,6 +131,14 @@ public class GUIDriver extends Application {
         processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol, descriptionCol);
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
+
+        // Load the top five most cpu intensive processes into the designated ArrayList
+        processes = SystemCallDriver.getProcesses(os, hal.getMemory());
+
+        // Add processes to the table
+        for (Process p : this.processes) {
+            processTable.getItems().add(p);
+        }
 
         // Performance Tab
         Tab performanceTab = new Tab("Performance");
