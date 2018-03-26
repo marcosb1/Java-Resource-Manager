@@ -1,8 +1,5 @@
 package com.marist.jrm.systemCall;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.impl.SimpleLogger;
 import oshi.SystemInfo;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.GlobalMemory;
@@ -44,7 +41,7 @@ public class SystemCallDriver {
   }
 
 
-  public static void printBasicInfo(final ComputerSystem computerSystem) {
+  private static void printBasicInfo(final ComputerSystem computerSystem) {
     System.out.println("manufacturer: " + computerSystem.getManufacturer());
     System.out.println("model: " + computerSystem.getModel());
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
