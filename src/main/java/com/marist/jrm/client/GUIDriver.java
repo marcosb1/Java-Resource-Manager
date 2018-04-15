@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -43,6 +44,8 @@ public class GUIDriver extends Application {
     private int numThreadsValue = 0;
     private int numProcessesValue = 0;
     private String upTimeValue = "";
+    private XYChart.Series cpuUsageSeries = new XYChart.Series<>();
+    private XYChart.Series memoryUsageSeries = new XYChart.Series<>();
 
     // System Call initializer data
     private SystemInfo si = new SystemInfo();
@@ -151,12 +154,15 @@ public class GUIDriver extends Application {
         final NumberAxis cpuYAxis = new NumberAxis();
         this.cpuUsageLineChart = new LineChart<Number, Number>(cpuXAxis, cpuYAxis);
         this.cpuUsageLineChart.setTitle("CPU Usage");
+        this.cpuUsageLineChart.getData().add(this.cpuUsageSeries);
 
         //      Memory Usage Line Chart
         final NumberAxis memoryXAxis = new NumberAxis();
+        // TODO: We need to retrieve the total amount of memory in the system to set as the upperBound
         final NumberAxis memoryYAxis = new NumberAxis();
         this.memoryUsageLineChart = new LineChart<Number, Number>(memoryXAxis, memoryYAxis);
         this.memoryUsageLineChart.setTitle("Memory Usage");
+        this.memoryUsageLineChart.getData().add(this.memoryUsageSeries);
 
         //      Data Panels Line Chart
         HBox performancePanelsLayout = new HBox();
@@ -228,6 +234,8 @@ public class GUIDriver extends Application {
         // TODO: update numThreadsValue
         // TODO: update numProcessesValue
         // TODO: update upTimeValue
+        // TODO: update CPU line chart
+        // TODO: update memory line chart
     }
 
     /** closeProgram
@@ -339,4 +347,12 @@ public class GUIDriver extends Application {
      * @return this.upTimeValue
      */
     public String getUpTimeValue() { return this.upTimeValue; }
+
+    public void updateCPULineChart() {
+        // TODO: What do we need to get the CPU usage?
+    }
+
+    public void updateMemoryLineChart() {
+        // TODO: What do we need to get the memory usage?
+    }
 }
