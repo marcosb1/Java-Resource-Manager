@@ -6,7 +6,9 @@ import java.sql.*;
  * Created by Dominic Rossillo on 3/25/2018.
  */
 public class SQLiteDBInit {
+
     public static void initDB() {
+        boolean debug=true;
         Connection c = null;
         DatabaseMetaData metaData = null;
         Statement stmt = null;
@@ -27,6 +29,30 @@ public class SQLiteDBInit {
                    " appName           TEXT    NOT NULL,"+
                    " appDescription    TEXT     NOT NULL)";
             stmt.executeUpdate(sql);
+
+
+            if(debug){
+                sql = "INSERT INTO APPLICATION(appID,appName,appDescription) VALUES(?,?,?)";
+                PreparedStatement debugSqlStatement = c.prepareStatement(sql);
+                debugSqlStatement.setInt(1,0);
+                debugSqlStatement.setString(2,"DEBUGapp");
+                debugSqlStatement.setString(3,"app for debuging");
+                debugSqlStatement.executeUpdate();
+
+
+                sql = "SELECT appID,appName,appDescription FROM APPLICATION";
+                stmt  = c.createStatement();
+                ResultSet rs= stmt.executeQuery(sql);
+                while(rs.next()){
+                    System.out.println(rs.getInt("appID")+"\t"+
+                                       rs.getString("appName")+"\t"+
+                                       rs.getString("appDescription")+"\t");
+                }
+            }
+
+
+
+
 
             sql = "DROP TABLE IF EXISTS PROCESS";
             stmt.executeUpdate(sql);
