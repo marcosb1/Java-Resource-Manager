@@ -3,6 +3,9 @@ package com.marist.jrm.client;
 import com.marist.jrm.client.components.ConfirmBox;
 import com.marist.jrm.model.Process;
 import com.marist.jrm.systemCall.SystemCallDriver;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -16,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import javafx.util.Duration;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
@@ -23,6 +27,10 @@ import oshi.software.os.OperatingSystem;
 import java.util.ArrayList;
 
 public class GUIDriver extends Application {
+
+    public TableView<Process> processTable;
+
+    private final int refreshInterval = 2000;
 
     private Stage applicationWindow;
     private BorderPane layout;
@@ -127,18 +135,10 @@ public class GUIDriver extends Application {
         descriptionCol.setMinWidth(150);
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        TableView<Process> processTable = new TableView<>();
+        processTable = new TableView<>();
         processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol, descriptionCol);
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
-
-        // Load the top five most cpu intensive processes into the designated ArrayList
-        processes = SystemCallDriver.getProcesses(os, hal.getMemory());
-
-        // Add processes to the table
-        for (Process p : this.processes) {
-            processTable.getItems().add(p);
-        }
 
         // Performance Tab
         Tab performanceTab = new Tab("Performance");
@@ -187,7 +187,19 @@ public class GUIDriver extends Application {
 
         performanceTab.setContent(performanceLayout);
         tabPane.getTabs().add(performanceTab);
+
         /* End of Tab Pane initialization */
+
+        /* Start of Timelines */
+
+        Timeline timeline = new Timeline();
+        timeline.getKeyFrames().add(
+                new KeyFrame(new Duration(this.refreshInterval),
+                        a -> updateProcesses()));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+        /* End of Timelines */
 
         this.layout = new BorderPane();
         this.layout.setTop(menu);
@@ -199,8 +211,9 @@ public class GUIDriver extends Application {
         this.applicationWindow.show();
     }
 
-    /**
-     *
+    /** closeProgram
+     * Will commit any left over transactions after prompting the user as to
+     * whether they are sure they want to exit the program.
      */
     private void closeProgram() {
         // TODO: post processing, we want to finish any transactions in progress
@@ -211,6 +224,25 @@ public class GUIDriver extends Application {
     }
 
     /**
+     *
+     */
+    public void updateProcesses() {
+        this.processTable.getItems().clear();
+        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+    }
+
+    /**
+     *
+     * @param active
+     */
+    public void setProcessTableContents(ArrayList<Process> active) {
+        // Add processes to the table
+        for (Process p : active) {
+            this.processTable.getItems().add(p);
+        }
+    }
+
+    /** setTotalMemoryValue
      *
      * @param newValue
      */
