@@ -44,7 +44,7 @@ public class GUIDriver extends Application {
     private int numProcessesValue = 0;
     private String upTimeValue = "";
 
-    // System Call initializers
+    // System Call initializer data
     private SystemInfo si = new SystemInfo();
     private HardwareAbstractionLayer hal = si.getHardware();
     private OperatingSystem os = si.getOperatingSystem();
@@ -206,7 +206,7 @@ public class GUIDriver extends Application {
         this.layout.setTop(menu);
         this.layout.setCenter(tabPane);
         // we must initialize the scene locally
-        // TODO: which is better for a scene object, private or public
+        // TODO: which is better for a scene object, private or public?
         Scene applicationScene = new Scene(this.layout, 600, 800);
         this.applicationWindow.setScene(applicationScene);
         this.applicationWindow.show();
@@ -222,6 +222,12 @@ public class GUIDriver extends Application {
         // update process table elements
         this.processTable.getItems().clear();
         this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+        // TODO: update totalMemoryValue
+        // TODO: update memoryUsedValue
+        // TODO: update memoryAvailableValue
+        // TODO: update numThreadsValue
+        // TODO: update numProcessesValue
+        // TODO: update upTimeValue
     }
 
     /** closeProgram
