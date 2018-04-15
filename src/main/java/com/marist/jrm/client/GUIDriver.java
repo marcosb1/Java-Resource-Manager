@@ -255,6 +255,14 @@ public class GUIDriver extends Application {
         this.totalMemoryValue = newValue;
     }
 
+    /** getTotalMemoryValue
+     * Use this getter to retrieve the total memory of the system (at a certain point) for statistics purposes
+     * @return this.totalMemoryValue
+     */
+    public int getTotalMemoryValue() {
+        return this.totalMemoryValue;
+    }
+
     /** setMemoryUsedValue
      *
      * @param newValue
@@ -262,6 +270,12 @@ public class GUIDriver extends Application {
     public void setMemoryUsedValue(int newValue) {
         this.memoryUsedValue = newValue;
     }
+
+    /** getMemoryUsedValue
+     * Use this getter to retrieve the memory used value (out of the totalMemoryValue) for statistics purposes
+     * @return this.memoryUsedValue
+     */
+    public int getMemoryUsedValue() { return this.memoryUsedValue; }
 
     /** setMemoryAvailableValue
      *
@@ -271,6 +285,13 @@ public class GUIDriver extends Application {
         this.memoryAvailableValue = newValue;
     }
 
+    /** getMemoryAvailableValue
+     * Use this getter to retrieve the memory available (memory left that can be used) of the system for statistics
+     * purposes
+     * @return this.memoryAvailableValue
+     */
+    public int getMemoryAvailableValue() { return this.memoryAvailableValue; }
+
     /** setNumThreadsValue
      *
      * @param newValue
@@ -278,6 +299,12 @@ public class GUIDriver extends Application {
     public void setNumThreadsValue(int newValue) {
         this.numThreadsValue = newValue;
     }
+
+    /** getNumThreadsValue
+     * Use this getter to retrieve the number of threads currently used by the system for statistics purposes
+     * @return this.numThreadsValue
+     */
+    public int getNumThreadsValue() { return this.numThreadsValue; }
 
     /** setNumProcessesValue
      *
@@ -287,6 +314,12 @@ public class GUIDriver extends Application {
         this.numProcessesValue = newValue;
     }
 
+    /** getNumProcessesValue
+     * Use this getter to retrieve the number of concurrent processes for statistics purposes
+     * @return this.numProcessesValue
+     */
+    public int getNumProcessesValue() { return this.numProcessesValue; }
+
     /** setUpTimeValue
      *
      * @param newValue
@@ -294,4 +327,10 @@ public class GUIDriver extends Application {
     public void setUpTimeValue(String newValue) {
         this.upTimeValue = newValue;
     }
+
+    /** getUpTimeValue
+     * Use this getter to retrieve the up time of the system for statistics purposes
+     * @return this.upTimeValue
+     */
+    public String getUpTimeValue() { return this.upTimeValue; }
 }

@@ -1,6 +1,5 @@
 package com.marist.jrm.client;
 
-import com.marist.jrm.client.GUIDriver;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
@@ -11,6 +10,10 @@ import static org.junit.Assert.assertEquals;
 
 public class GUIDriverTest {
 
+    /** testLaunch
+     * This will test the launching of the GUI
+     * @throws InterruptedException
+     */
     @Test
     public void testLaunch() throws InterruptedException {
         Thread thread = new Thread(new Runnable() {
@@ -35,8 +38,9 @@ public class GUIDriverTest {
         });
         // Initialize the thread
         thread.start();
-        // Time to use the app, with out this, the thread will be killed before you can tell.
-        Thread.sleep(10000);
+        // We only want it to run for 5 seconds because by then everything should be updated, so we will know if it
+        // launched correctly
+        Thread.sleep(5000);
     }
 
 }
