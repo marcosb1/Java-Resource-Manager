@@ -43,7 +43,8 @@ public class GUIDriver extends Application {
     private int numThreadsValue = 0;
     private int numProcessesValue = 0;
     private String upTimeValue = "";
-    private ArrayList<Process> processes;
+
+    // System Call initializers
     private SystemInfo si = new SystemInfo();
     private HardwareAbstractionLayer hal = si.getHardware();
     private OperatingSystem os = si.getOperatingSystem();
@@ -195,7 +196,7 @@ public class GUIDriver extends Application {
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().add(
                 new KeyFrame(new Duration(this.refreshInterval),
-                        a -> updateProcesses()));
+                        a -> update()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
@@ -211,6 +212,18 @@ public class GUIDriver extends Application {
         this.applicationWindow.show();
     }
 
+    /** update
+     * The update method will act as a "loop"-style method which will be placed in a Timeline to execute on
+     * an interval, defined by refreshInterval
+     *
+     * NOTE: PLEASE PUT ALL METHODS REGARDING UI UPDATING IN HERE
+     */
+    public void update() {
+        // update process table elements
+        this.processTable.getItems().clear();
+        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+    }
+
     /** closeProgram
      * Will commit any left over transactions after prompting the user as to
      * whether they are sure they want to exit the program.
@@ -223,15 +236,7 @@ public class GUIDriver extends Application {
             this.applicationWindow.close();
     }
 
-    /**
-     *
-     */
-    public void updateProcesses() {
-        this.processTable.getItems().clear();
-        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
-    }
-
-    /**
+    /** setProcessTableContents
      *
      * @param active
      */
@@ -250,7 +255,7 @@ public class GUIDriver extends Application {
         this.totalMemoryValue = newValue;
     }
 
-    /**
+    /** setMemoryUsedValue
      *
      * @param newValue
      */
@@ -258,7 +263,7 @@ public class GUIDriver extends Application {
         this.memoryUsedValue = newValue;
     }
 
-    /**
+    /** setMemoryAvailableValue
      *
      * @param newValue
      */
@@ -266,7 +271,7 @@ public class GUIDriver extends Application {
         this.memoryAvailableValue = newValue;
     }
 
-    /**
+    /** setNumThreadsValue
      *
      * @param newValue
      */
@@ -274,7 +279,7 @@ public class GUIDriver extends Application {
         this.numThreadsValue = newValue;
     }
 
-    /**
+    /** setNumProcessesValue
      *
      * @param newValue
      */
@@ -282,7 +287,7 @@ public class GUIDriver extends Application {
         this.numProcessesValue = newValue;
     }
 
-    /**
+    /** setUpTimeValue
      *
      * @param newValue
      */
