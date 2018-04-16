@@ -24,7 +24,7 @@ CREATE TABLE SYSTEM(
    sysTime INT PRIMARY KEY     NOT NULL,
    sysCPUUsage           INT    NOT NULL,
    sysUptime    INT     NOT NULL,
-   sysPhyicalMemory INT     NOT NULL,
+   sysPhysicalMemory INT     NOT NULL,
    sysFreeMemory INT     NOT NULL,
    sysTotalThreads INT     NOT NULL,
    sysTotalProcesses INT     NOT NULL

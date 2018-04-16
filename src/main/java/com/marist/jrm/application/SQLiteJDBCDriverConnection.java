@@ -13,14 +13,17 @@ public class SQLiteJDBCDriverConnection {
     /**
      * Connect to database
      */
-    public static void connect() {
+    public static Connection connect() {
         Connection conn = null;
         try {
             // db parameters
+
             String url = "jdbc:sqlite:src/resources/jrmDB.db";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
-
+            conn = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            if (conn == null){
+                System.out.println("conn failed");
+            }
             System.out.println("Connection to SQLite has been established.");
 
         } catch (SQLException e) {
@@ -34,6 +37,7 @@ public class SQLiteJDBCDriverConnection {
                 System.out.println(ex.getMessage());
             }
         }
+        return conn;
     }
     /**
      * @param args the command line arguments

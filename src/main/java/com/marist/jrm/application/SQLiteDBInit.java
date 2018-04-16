@@ -6,7 +6,9 @@ import java.sql.*;
  * Created by Dominic Rossillo on 3/25/2018.
  */
 public class SQLiteDBInit {
+
     public static void initDB() {
+
         Connection c = null;
         DatabaseMetaData metaData = null;
         Statement stmt = null;
@@ -20,13 +22,20 @@ public class SQLiteDBInit {
             metaData= c.getMetaData();
             String sql = "DROP TABLE IF EXISTS APPLICATION";
             stmt.executeUpdate(sql);
-
+//            sql= "PRAGMA foreign_keys = ON";
+//            stmt.executeUpdate(sql);
             sql =
             "CREATE TABLE APPLICATION("+
                    " appID INT PRIMARY KEY     NOT NULL,"+
                    " appName           TEXT    NOT NULL,"+
                    " appDescription    TEXT     NOT NULL)";
             stmt.executeUpdate(sql);
+
+
+
+
+
+
 
             sql = "DROP TABLE IF EXISTS PROCESS";
             stmt.executeUpdate(sql);
@@ -55,7 +64,7 @@ public class SQLiteDBInit {
                     "sysTime INT PRIMARY KEY     NOT NULL,"+
                     "sysCPUUsage           INT    NOT NULL,"+
                     "sysUptime    INT     NOT NULL,"+
-                    "sysPhyicalMemory INT     NOT NULL,"+
+                    "sysPhysicalMemory INT     NOT NULL,"+
                     "sysFreeMemory INT     NOT NULL,"+
                     "sysTotalThreads INT     NOT NULL,"+
                     "sysTotalProcesses INT     NOT NULL)";
@@ -67,12 +76,13 @@ public class SQLiteDBInit {
             while (rs.next()) {
                 System.out.println(rs.getString(3));
             }
-            stmt.close();
-            c.close();
+//            stmt.close();
+//            c.close();
+            System.out.println("Tables created successfully");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Tables created successfully");
+
     }
 }
