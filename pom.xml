@@ -70,7 +70,7 @@
                 </dependencies>
                 <configuration>
                     <includes>
-                        <include>*Test.java</include>
+                        <include>*TestThreads*.java</include>
                     </includes>
                 </configuration>
             </plugin>
