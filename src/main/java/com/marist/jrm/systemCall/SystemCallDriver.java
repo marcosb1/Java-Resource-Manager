@@ -31,13 +31,14 @@ public class SystemCallDriver {
   public static ArrayList<Process> getProcesses(OperatingSystem os, GlobalMemory memory) {
     System.out.println("Processes: " + os.getProcessCount() + ", Threads: " + os.getThreadCount());
     // Sort by highest CPU
-    List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(5, OperatingSystem.ProcessSort.CPU));
+    List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
     ArrayList<Process> procs = new ArrayList<>();
 
     System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
-    for (int i = 0; i < OSprocs.size() && i < 5; i++) {
+    for (int i = 0; i < OSprocs.size() && i < 50; i++) {
       OSProcess p = OSprocs.get(i);
-      Process process = new Process(p.getName(),String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),String.valueOf(p.getThreadCount()),"desc");
+      OSProcess.State state = p.getState();
+      Process process = new Process(p.getName(),String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),String.valueOf(p.getThreadCount()),"desc",state);
       procs.add(process);
       System.out.format(" %5d %5.1f %4.1f %9s %9s %s%n", p.getProcessID(),
         100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime(),
