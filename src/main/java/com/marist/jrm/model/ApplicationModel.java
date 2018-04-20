@@ -1,6 +1,6 @@
 package com.marist.jrm.model;
 
-public class Application {
+public class ApplicationModel {
 
     private String name;
     private String status;

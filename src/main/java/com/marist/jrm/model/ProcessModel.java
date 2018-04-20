@@ -1,7 +1,7 @@
 package com.marist.jrm.model;
 
 
-public class Process {
+public class ProcessModel {
 
     private String processName;
     private String memory;
