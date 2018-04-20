@@ -7,15 +7,18 @@ public class Process {
     private String memory;
     private String threadCount;
     private String description;
+    private ArrayList<Int> threadUsages;
 
     public Process(String processName,
                   String memory,
                   String threadCount,
-                  String description) {
-        this.processName = processName;
-        this.memory = memory;
-        this.threadCount = threadCount;
-        this.description = description;
+                  String description,
+                  ArrayList<Int> threadUsages) {
+        this.setProcessName(processName);
+        this.setMemory(memory);
+        this.setThreadCount(threadCount);
+        this.setDescription(description);
+        this.setThreadUsages(threadUsages);
     }
 
     public String getProcessName() {
@@ -49,5 +52,12 @@ public class Process {
     public void setDescription(String description) {
         this.description = description;
     }
-}
 
+    public ArrayList<Int> getThreadUsages() {
+      return this.threadUsages;
+    }
+
+    public void setThreadUsages(ArrayList<Int> threadUsages) {
+      this.threadUsages = threadUsages;
+    }
+}

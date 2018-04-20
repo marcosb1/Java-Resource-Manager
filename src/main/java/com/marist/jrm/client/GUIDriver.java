@@ -228,6 +228,7 @@ public class GUIDriver extends Application {
         // update process table elements
         this.processTable.getItems().clear();
         this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+        // System Call TODO
         // TODO: update totalMemoryValue
         // TODO: update memoryUsedValue
         // TODO: update memoryAvailableValue
@@ -236,6 +237,14 @@ public class GUIDriver extends Application {
         // TODO: update upTimeValue
         // TODO: update CPU line chart
         // TODO: update memory line chart
+
+        // Application TODO
+        // TODO: List of applications for application package
+        // TODO: From there nest Process list in Application model insert into db
+        // TODO: Get num threads for that + usages
+
+        // @everyone TODO
+        // TODO: Figure out how we're gonna due system time
     }
 
     /** closeProgram
