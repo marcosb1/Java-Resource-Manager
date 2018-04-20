@@ -255,6 +255,8 @@ public class GUIDriver extends Application {
         // TODO: post processing, we want to finish any transactions in progress
         boolean confirmed = ConfirmBox.display("Close Program", "Are you sure you want to exit?");
 
+        // TODO: Should we clear DB here?
+
         if (confirmed)
             this.applicationWindow.close();
     }
