@@ -1,7 +1,5 @@
 package com.marist.jrm.model;
 
-import oshi.software.os.OSProcess;
-
 
 public class Process {
 
@@ -9,26 +7,18 @@ public class Process {
     private String memory;
     private String threadCount;
     private String description;
-    private OSProcess.State state;
+    private ArrayList<Int> threadUsages;
 
     public Process(String processName,
-                   String memory,
-                   String threadCount,
-                   String description,
-                   OSProcess.State state) {
-        this.processName = processName;
-        this.memory = memory;
-        this.threadCount = threadCount;
-        this.description = description;
-        this.state = state;
-    }
-
-    public OSProcess.State getState() {
-        return state;
-    }
-
-    public void setState(OSProcess.State state) {
-        this.state = state;
+                  String memory,
+                  String threadCount,
+                  String description,
+                  ArrayList<Int> threadUsages) {
+        this.setProcessName(processName);
+        this.setMemory(memory);
+        this.setThreadCount(threadCount);
+        this.setDescription(description);
+        this.setThreadUsages(threadUsages);
     }
 
     public String getProcessName() {
@@ -62,5 +52,12 @@ public class Process {
     public void setDescription(String description) {
         this.description = description;
     }
-}
 
+    public ArrayList<Int> getThreadUsages() {
+      return this.threadUsages;
+    }
+
+    public void setThreadUsages(ArrayList<Int> threadUsages) {
+      this.threadUsages = threadUsages;
+    }
+}
