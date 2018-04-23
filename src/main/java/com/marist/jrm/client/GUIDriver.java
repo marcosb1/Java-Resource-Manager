@@ -167,10 +167,12 @@ public class GUIDriver extends Application {
         this.memoryXAxis.setForceZeroInRange(false);
         this.memoryXAxis.setAnimated(false);
         this.memoryXAxis.setAutoRanging(false);
+        this.memoryXAxis.setTickUnit(200000);
 
         this.memoryYAxis.setLowerBound(0);
         this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / 1073741824);
         this.memoryYAxis.setAutoRanging(false);
+        this.memoryYAxis.setTickUnit(4);
 
         this.memoryUsageLineChart = new LineChart<Number, Number>(this.memoryXAxis, this.memoryYAxis);
         this.memoryUsageLineChart.setCreateSymbols(false);
