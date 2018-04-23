@@ -163,7 +163,12 @@ public class SystemCallDriver {
     return memoryUsageVals;
   }
 
-  public static long[] getMemoryUsage(OperatingSystem os, GlobalMemory memory) {
+  /**
+   * Abstract method to retrieve the memory used at a certain time
+   * @param memory
+   * @return tuple containing the time and the memory used measurement
+   */
+  public static long[] getMemoryUsage(GlobalMemory memory) {
     long time = System.currentTimeMillis();
     long memUsed = (memory.getTotal() - memory.getAvailable()) / 1073741824;
     return new long[] { time, memUsed };

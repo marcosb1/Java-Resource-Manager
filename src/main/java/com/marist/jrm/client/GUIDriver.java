@@ -49,12 +49,6 @@ public class GUIDriver extends Application {
     private Label numProcessesValueLabel = new Label();
     private Label upTimeValueLabel = new Label();
 
-    private Double totalMemoryValue = 0.0;
-    private Double memoryUsedValue = 0.0;
-    private Double memoryAvailableValue = 0.0;
-    private int numThreadsValue = 0;
-    private int numProcessesValue = 0;
-    private String upTimeValue = "";
     private NumberAxis cpuXAxis = new NumberAxis();
     private NumberAxis cpuYAxis = new NumberAxis();
     private final NumberAxis memoryXAxis = new NumberAxis();
@@ -76,8 +70,8 @@ public class GUIDriver extends Application {
     }
 
     /**
-     *
-     * @param primaryStage
+     * Launches and initializes window/application with all widgets/components
+     * @param primaryStage where the widget(s) and scene(s) are going to displayed
      * @throws Exception
      */
     @Override
@@ -259,7 +253,7 @@ public class GUIDriver extends Application {
         this.applicationWindow.show();
     }
 
-    /** update
+    /**
      * The update method will act as a "loop"-style method which will be placed in a Timeline to execute on
      * an interval, defined by refreshInterval
      *
@@ -279,7 +273,7 @@ public class GUIDriver extends Application {
         this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
         //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
-        this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
+        this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
         // Application TODO
         // TODO: List of applications for application package
@@ -290,7 +284,7 @@ public class GUIDriver extends Application {
         // TODO: Figure out how we're gonna do system time
     }
   
-    /** closeProgram
+    /**
      * Will commit any left over transactions after prompting the user as to
      * whether they are sure they want to exit the program.
      */
@@ -304,8 +298,7 @@ public class GUIDriver extends Application {
             this.applicationWindow.close();
     }
 
-    /** setProcessTableContents
-     * 
+    /**
      * @param active List containing the active processes to be placed in the table
      */
     public void setProcessTableContents(ArrayList<ProcessModel> active) {
@@ -315,31 +308,17 @@ public class GUIDriver extends Application {
         }
     }
 
-    /** setTotalMemoryValue
-     *
+    /**
      * @param newValue new total memory value
      */
     public void setTotalMemoryValue(Double newValue) {
         this.totalMemoryValueLabel.setText(newValue + "");
     }
 
-    /** getTotalMemoryValue
-     * Use this getter to retrieve the total memory of the system (at a certain point) for statistics purposes
-     * @return this.totalMemoryValueLabel.getText() contents of the totalMemoryValue label
-     */
-    public String getTotalMemoryValue() { return this.totalMemoryValueLabel.getText(); }
-
-    /** setMemoryUsedValue
-     *
+    /**
      * @param newValue new memory used value
      */
     public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
-
-    /** getMemoryUsedValue
-     * Use this getter to retrieve the memory used value (out of the totalMemoryValue) for statistics purposes
-     * @return this.memoryUsedValueLabel.getText() contents of the memoryUsedValue label
-     */
-    public String getMemoryUsedValue() { return this.memoryUsedValueLabel.getText(); }
 
     /** setMemoryAvailableValue
      *
@@ -347,56 +326,28 @@ public class GUIDriver extends Application {
      */
     public void setMemoryAvailableValue(double newValue) { this.memoryAvailableValueLabel.setText(newValue + ""); }
 
-    /** getMemoryAvailableValue
-     * Use this getter to retrieve the memory available (memory left that can be used) of the system for statistics
-     * purposes
-     * @return this.memoryAvailableValueLabel.getText() contents of the memoryAvailableValue label
-     */
-    public String getMemoryAvailableValue() { return this.memoryAvailableValueLabel.getText(); }
-
-    /** setNumThreadsValue
-     *
+    /**
      * @param newValue new number of threads value
      */
     public void setNumThreadsValue(int newValue) {
         this.numThreadsValueLabel.setText(newValue + "");
     }
 
-    /** getNumThreadsValue
-     * Use this getter to retrieve the number of threads currently used by the system for statistics purposes
-     * @return this.numThreadsValueLabel.getText() contents of the numThreadsValue label
-     */
-    public String getNumThreadsValue() { return this.numThreadsValueLabel.getText(); }
-
-    /** setNumProcessesValue
-     *
+    /**
      * @param newValue new number of processes value
      */
     public void setNumProcessesValue(int newValue) {
         this.numProcessesValueLabel.setText(newValue + "");
     }
 
-    /** getNumProcessesValue
-     * Use this getter to retrieve the number of concurrent processes for statistics purposes
-     * @return this.numProcessesValueLabel.getText() contents of the numProcessesValue label
-     */
-    public String getNumProcessesValue() { return this.numProcessesValueLabel.getText(); }
-
-    /** setUpTimeValue
-     *
+    /**
      * @param newValue new up time value
      */
     public void setUpTimeValue(String newValue) {
         this.upTimeValueLabel.setText(newValue + "");
     }
 
-    /** getUpTimeValue
-     * Use this getter to retrieve the up time of the system for statistics purposes
-     * @return this.upTimeValueLabel.getText() contents of the upTimeValue label
-     */
-    public String getUpTimeValue() { return this.upTimeValueLabel.getText(); }
-
-    /** updateCPULineChart
+    /**
      * Creates an update scroll effect for the CPU usage line chart by resetting the upper and lower bounds of the
      * chart with new values
      * @param newUsage new value to be added to the line chart
@@ -410,7 +361,7 @@ public class GUIDriver extends Application {
         this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
     }
 
-    /** updateMemoryLineChart
+    /**
      * Creates an update scroll effect for the memory usage line chart by resetting the upper and lower bounds of the
      * chart with new values
      * @param newUsage new value to be added to the line chart
