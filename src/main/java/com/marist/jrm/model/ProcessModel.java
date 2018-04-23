@@ -1,23 +1,31 @@
 package com.marist.jrm.model;
 
 
+import oshi.software.os.OSProcess;
+
+import java.util.ArrayList;
+
+
 public class ProcessModel {
 
     private String processName;
     private String memory;
     private String threadCount;
     private String description;
-    private ArrayList<Int> threadUsages;
+    private OSProcess.State state;
+    private ArrayList<Integer> threadUsages;
 
-    public Process(String processName,
+    public ProcessModel(String processName,
                   String memory,
                   String threadCount,
                   String description,
-                  ArrayList<Int> threadUsages) {
+                  OSProcess.State state,
+                  ArrayList<Integer> threadUsages) {
         this.setProcessName(processName);
         this.setMemory(memory);
         this.setThreadCount(threadCount);
         this.setDescription(description);
+        this.setState(state);
         this.setThreadUsages(threadUsages);
     }
 
@@ -53,11 +61,15 @@ public class ProcessModel {
         this.description = description;
     }
 
-    public ArrayList<Int> getThreadUsages() {
+    public ArrayList<Integer> getThreadUsages() {
       return this.threadUsages;
     }
 
-    public void setThreadUsages(ArrayList<Int> threadUsages) {
+    public void setThreadUsages(ArrayList<Integer> threadUsages) {
       this.threadUsages = threadUsages;
     }
+
+    public OSProcess.State getState() { return state; }
+
+    public void setState(OSProcess.State state) { this.state = state; }
 }

@@ -1,7 +1,8 @@
 package com.marist.jrm.systemCall;
 
 import com.marist.jrm.client.GUIDriver;
-import com.marist.jrm.model.Process;
+import com.marist.jrm.model.ProcessModel;
+import com.marist.jrm.model.ProcessModel;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
@@ -34,8 +35,8 @@ public class TestThreads {
   public void testLaunch() throws InterruptedException, IOException {
     GenerateProcess gp = new GenerateProcess();
     GenerateProcess.main(new String[0]);
-    ArrayList<Process> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
-    for (Process p : processes) {
+    ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
+    for (ProcessModel p : processes) {
       if (p.getProcessName().equals("java.exe")) {
         assertTrue(true);
         System.out.println("number of threads: " + p.getThreadCount());
