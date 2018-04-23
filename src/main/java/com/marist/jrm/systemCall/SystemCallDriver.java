@@ -60,9 +60,6 @@ public class SystemCallDriver {
     System.out.println(threadCPUUsage);
   }
 
-
-
-
   public static void main(String[] args) {
 
     SystemInfo si = new oshi.SystemInfo();
@@ -74,27 +71,24 @@ public class SystemCallDriver {
     //getProcesses(os, hal.getMemory());
 
     calcMemoryUsagePerThread();
-
-
   }
 
   public static ArrayList<ProcessModel> getProcesses(OperatingSystem os, GlobalMemory memory) {
-    System.out.println("Processes: " + os.getProcessCount() + ", Threads: " + os.getThreadCount());
     // Sort by highest CPU
     List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
     ArrayList<ProcessModel> procs = new ArrayList<>();
 
-    System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
-    for (int i = 0; i < OSprocs.size() && i < 5; i++) {
+    for (int i = 0; i < OSprocs.size() && i < 50; i++) {
       OSProcess p = OSprocs.get(i);
 
       OSProcess.State state = p.getState();
-      ProcessModel process = new ProcessModel(p.getName(),String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),String.valueOf(p.getThreadCount()),"desc",state,new ArrayList<Integer>());
+      ProcessModel process = new ProcessModel(p.getName(),
+              String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),
+              String.valueOf(p.getThreadCount()),
+              "desc",
+              state,
+              new ArrayList<Integer>());
       procs.add(process);
-      System.out.format(" %5d %5.1f %4.1f %9s %9s %s%n", p.getProcessID(),
-        100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime(),
-        100d * p.getResidentSetSize() / memory.getTotal(), FormatUtil.formatBytes(p.getVirtualSize()),
-        FormatUtil.formatBytes(p.getResidentSetSize()), p.getName());
     }
 
     return procs;
@@ -109,5 +103,14 @@ public class SystemCallDriver {
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
   }
 
+  public static int[] getCPUUsage(OperatingSystem os, GlobalMemory memory) {
+    // TODO:
+    return null;
+  }
 
+  public static long[] getMemoryUsage(OperatingSystem os, GlobalMemory memory) {
+    long time = System.currentTimeMillis();
+    long memUsed = (memory.getTotal() - memory.getAvailable()) / 1073741824;
+    return new long[] { time, memUsed };
+  }
 }

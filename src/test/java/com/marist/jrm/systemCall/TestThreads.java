@@ -1,11 +1,6 @@
 package com.marist.jrm.systemCall;
 
-import com.marist.jrm.client.GUIDriver;
 import com.marist.jrm.model.ProcessModel;
-import com.marist.jrm.model.ProcessModel;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.stage.Stage;
 import org.junit.Test;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
@@ -14,7 +9,6 @@ import oshi.software.os.OperatingSystem;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -35,7 +29,7 @@ public class TestThreads {
   public void testLaunch() throws InterruptedException, IOException {
     GenerateProcess gp = new GenerateProcess();
     GenerateProcess.main(new String[0]);
-    ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
+    ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(this.os, this.hal.getMemory());
     for (ProcessModel p : processes) {
       if (p.getProcessName().equals("java.exe")) {
         assertTrue(true);

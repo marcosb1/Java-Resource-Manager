@@ -9,8 +9,8 @@ public class ApplicationModel {
     private ArrayList<ProcessModel> processes;
 
     public ApplicationModel(String name,
-                   String status,
-                   ArrayList<ProcessModel> processes) {
+                            String status,
+                            ArrayList<ProcessModel> processes) {
         this.setName(name);
         this.setStatus(status);
         this.setProcesses(processes);
