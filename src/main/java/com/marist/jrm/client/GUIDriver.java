@@ -234,6 +234,7 @@ public class GUIDriver extends Application {
         // TODO: update numThreadsValue
         // TODO: update numProcessesValue
         // TODO: update upTimeValue
+        // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
         // TODO: update CPU line chart
         // TODO: update memory line chart
     }

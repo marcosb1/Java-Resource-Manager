@@ -49,6 +49,8 @@ public class SystemCallDriver {
     return procs;
   }
 
+  // TODO: create buildApplication functions which will take in a ArrayList<Process>
+
 
   public static void printBasicInfo(final ComputerSystem computerSystem) {
     System.out.println("manufacturer: " + computerSystem.getManufacturer());

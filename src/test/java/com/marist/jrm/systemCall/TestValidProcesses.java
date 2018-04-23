@@ -53,6 +53,7 @@ public class TestValidProcesses {
         assertFalse(p.getState() == OSProcess.State.ZOMBIE);
       }
     } catch (AssertionError e) {
+      assertTrue(false);
       mostRecentProc.setState(OSProcess.State.STOPPED);
     }
 
