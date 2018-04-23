@@ -5,7 +5,6 @@ import oshi.software.os.OSProcess;
 
 import java.util.ArrayList;
 
-
 public class ProcessModel {
 
     private String processName;
@@ -16,11 +15,11 @@ public class ProcessModel {
     private ArrayList<Integer> threadUsages;
 
     public ProcessModel(String processName,
-                  String memory,
-                  String threadCount,
-                  String description,
-                  OSProcess.State state,
-                  ArrayList<Integer> threadUsages) {
+                        String memory,
+                        String threadCount,
+                        String description,
+                        OSProcess.State state,
+                        ArrayList<Integer> threadUsages) {
         this.setProcessName(processName);
         this.setMemory(memory);
         this.setThreadCount(threadCount);
@@ -41,7 +40,7 @@ public class ProcessModel {
         return memory;
     }
 
-    public void setMemory(String Memory) {
+    public void setMemory(String memory) {
         this.memory = memory;
     }
 
@@ -61,6 +60,14 @@ public class ProcessModel {
         this.description = description;
     }
 
+    public OSProcess.State getState() {
+        return this.state;
+    }
+
+    public void setState(OSProcess.State state) {
+        this.state = state;
+    }
+
     public ArrayList<Integer> getThreadUsages() {
       return this.threadUsages;
     }
@@ -68,8 +75,4 @@ public class ProcessModel {
     public void setThreadUsages(ArrayList<Integer> threadUsages) {
       this.threadUsages = threadUsages;
     }
-
-    public OSProcess.State getState() { return state; }
-
-    public void setState(OSProcess.State state) { this.state = state; }
 }

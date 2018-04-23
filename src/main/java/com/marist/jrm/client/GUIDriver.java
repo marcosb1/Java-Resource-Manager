@@ -27,12 +27,16 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GUIDriver extends Application {
 
     public TableView<ProcessModel> processTable;
 
-    private final int refreshInterval = 2000;
+    private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
+    private final static Level CURRENT_LEVEL = Level.INFO;
+    private final int REFRESH_INTERVAL = 2000;
 
     private Stage applicationWindow;
     private BorderPane layout;
@@ -45,8 +49,15 @@ public class GUIDriver extends Application {
     private int numThreadsValue = 0;
     private int numProcessesValue = 0;
     private String upTimeValue = "";
+    private NumberAxis cpuXAxis = new NumberAxis();
+    private NumberAxis cpuYAxis = new NumberAxis();
+    private final NumberAxis memoryXAxis = new NumberAxis();
+    // TODO: We need to retrieve the total amount of memory in the system to set as the upperBound
+    private final NumberAxis memoryYAxis = new NumberAxis();
     private XYChart.Series cpuUsageSeries = new XYChart.Series<>();
     private XYChart.Series memoryUsageSeries = new XYChart.Series<>();
+    private ArrayList<long[]> cpuUsages = new ArrayList<>();
+    private ArrayList<long[]> memoryUsages = new ArrayList<>();
 
     // System Call initializer data
     private SystemInfo si = new SystemInfo();
@@ -54,6 +65,7 @@ public class GUIDriver extends Application {
     private OperatingSystem os = si.getOperatingSystem();
 
     public static void main(String[] args) {
+        LOGGER.setLevel(CURRENT_LEVEL);
         launch(args);
     }
 
@@ -125,23 +137,19 @@ public class GUIDriver extends Application {
         processesTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         TableColumn<ProcessModel, String> processNameCol = new TableColumn<>("Process Name");
-        processNameCol.setMinWidth(150);
+        processNameCol.setMinWidth(200);
         processNameCol.setCellValueFactory(new PropertyValueFactory<>("processName"));
 
         TableColumn<ProcessModel, String> memoryCol = new TableColumn<>("Memory");
-        memoryCol.setMinWidth(150);
+        memoryCol.setMinWidth(200);
         memoryCol.setCellValueFactory(new PropertyValueFactory<>("memory"));
 
         TableColumn<ProcessModel, String> threadCountCol = new TableColumn<>("Thread Count");
-        threadCountCol.setMinWidth(150);
+        threadCountCol.setMinWidth(200);
         threadCountCol.setCellValueFactory(new PropertyValueFactory<>("threadCount"));
 
-        TableColumn<ProcessModel, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setMinWidth(150);
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-
         processTable = new TableView<>();
-        processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol, descriptionCol);
+        processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol);
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
@@ -151,18 +159,28 @@ public class GUIDriver extends Application {
         performanceTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         //      CPU Usage Line Chart
-        final NumberAxis cpuXAxis = new NumberAxis();
-        final NumberAxis cpuYAxis = new NumberAxis();
-        this.cpuUsageLineChart = new LineChart<Number, Number>(cpuXAxis, cpuYAxis);
+        this.cpuUsageLineChart = new LineChart<Number, Number>(this.cpuXAxis, this.cpuYAxis);
         this.cpuUsageLineChart.setTitle("CPU Usage");
+        this.cpuUsageSeries.setName("CPU Consumption");
         this.cpuUsageLineChart.getData().add(this.cpuUsageSeries);
 
         //      Memory Usage Line Chart
-        final NumberAxis memoryXAxis = new NumberAxis();
-        // TODO: We need to retrieve the total amount of memory in the system to set as the upperBound
-        final NumberAxis memoryYAxis = new NumberAxis();
-        this.memoryUsageLineChart = new LineChart<Number, Number>(memoryXAxis, memoryYAxis);
+        this.memoryXAxis.setForceZeroInRange(false);
+        this.memoryXAxis.setAnimated(false);
+        this.memoryXAxis.setAutoRanging(false);
+        this.memoryXAxis.setTickUnit(200000);
+
+        this.memoryYAxis.setLowerBound(0);
+        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / 1073741824);
+        this.memoryYAxis.setAutoRanging(false);
+        this.memoryYAxis.setTickUnit(4);
+
+        this.memoryUsageLineChart = new LineChart<Number, Number>(this.memoryXAxis, this.memoryYAxis);
+        this.memoryUsageLineChart.setCreateSymbols(false);
+        this.memoryUsageLineChart.setAnimated(false);
         this.memoryUsageLineChart.setTitle("Memory Usage");
+
+        this.memoryUsageSeries.setName("Memory Consumption");
         this.memoryUsageLineChart.getData().add(this.memoryUsageSeries);
 
         //      Data Panels Line Chart
@@ -202,7 +220,7 @@ public class GUIDriver extends Application {
 
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().add(
-                new KeyFrame(new Duration(this.refreshInterval),
+                new KeyFrame(new Duration(this.REFRESH_INTERVAL),
                         a -> update()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
@@ -216,6 +234,7 @@ public class GUIDriver extends Application {
         // TODO: which is better for a scene object, private or public?
         Scene applicationScene = new Scene(this.layout, 600, 800);
         this.applicationWindow.setScene(applicationScene);
+        this.applicationWindow.setResizable(false);
         this.applicationWindow.show();
     }
 
@@ -228,7 +247,7 @@ public class GUIDriver extends Application {
     public void update() {
         // update process table elements
         this.processTable.getItems().clear();
-        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+        this.setProcessTableContents(SystemCallDriver.getProcesses(this.os, this.hal.getMemory()));
         // System Call TODO
         Double[] memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
         this.totalMemoryValue = memoryValues[0];
@@ -239,7 +258,7 @@ public class GUIDriver extends Application {
         this.upTimeValue = FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime());
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
         // TODO: update CPU line chart
-        // TODO: update memory line chart
+        this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
 
         // Application TODO
         // TODO: List of applications for application package
@@ -247,7 +266,7 @@ public class GUIDriver extends Application {
         // TODO: Get num threads for that + usages
 
         // @everyone TODO
-        // TODO: Figure out how we're gonna due system time
+        // TODO: Figure out how we're gonna do system time
     }
 
     /** closeProgram
@@ -356,11 +375,16 @@ public class GUIDriver extends Application {
      */
     public String getUpTimeValue() { return this.upTimeValue; }
 
-    public void updateCPULineChart() {
-        // TODO: What do we need to get the CPU usage?
+    private void updateCPULineChart(long[] newUsage) {
+
     }
 
-    public void updateMemoryLineChart() {
-        // TODO: What do we need to get the memory usage?
+    private void updateMemoryLineChart(long[] newUsage) {
+        this.memoryUsages.add(newUsage);
+        long x = newUsage[0];
+        long y = newUsage[1];
+        this.memoryUsageSeries.getData().add(new XYChart.Data(x, y));
+        this.memoryXAxis.setLowerBound(this.memoryUsages.get(0)[0]);
+        this.memoryXAxis.setUpperBound(this.memoryUsages.get(this.memoryUsages.size() - 1)[0]);
     }
 }
