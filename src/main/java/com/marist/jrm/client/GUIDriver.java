@@ -150,6 +150,7 @@ public class GUIDriver extends Application {
 
         processTable = new TableView<>();
         processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol);
+      
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
@@ -281,7 +282,7 @@ public class GUIDriver extends Application {
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
     }
-
+  
     /** closeProgram
      * Will commit any left over transactions after prompting the user as to
      * whether they are sure they want to exit the program.
@@ -303,6 +304,25 @@ public class GUIDriver extends Application {
     public void setProcessTableContents(ArrayList<ProcessModel> active) {
         // Add processes to the table
         for (ProcessModel p : active) {
+            this.processTable.getItems().add(p);
+        }
+    }
+
+    /** setTotalMemoryValue
+     *
+     */
+    public void updateProcesses() {
+        this.processTable.getItems().clear();
+        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+    }
+
+    /**
+     *
+     * @param active
+     */
+    public void setProcessTableContents(ArrayList<Process> active) {
+        // Add processes to the table
+        for (Process p : active) {
             this.processTable.getItems().add(p);
         }
     }
