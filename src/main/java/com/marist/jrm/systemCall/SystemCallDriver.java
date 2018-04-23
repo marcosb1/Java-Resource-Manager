@@ -8,7 +8,7 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
-import com.marist.jrm.model.Process;
+import com.marist.jrm.model.ProcessModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,25 +25,23 @@ public class SystemCallDriver {
 
     printBasicInfo(hal.getComputerSystem());
     getProcesses(os, hal.getMemory());
-
   }
 
-  public static ArrayList<Process> getProcesses(OperatingSystem os, GlobalMemory memory) {
-    System.out.println("Processes: " + os.getProcessCount() + ", Threads: " + os.getThreadCount());
+  public static ArrayList<ProcessModel> getProcesses(OperatingSystem os, GlobalMemory memory) {
     // Sort by highest CPU
     List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
-    ArrayList<Process> procs = new ArrayList<>();
+    ArrayList<ProcessModel> procs = new ArrayList<>();
 
-    System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
     for (int i = 0; i < OSprocs.size() && i < 50; i++) {
       OSProcess p = OSprocs.get(i);
       OSProcess.State state = p.getState();
-      Process process = new Process(p.getName(),String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),String.valueOf(p.getThreadCount()),"desc",state);
+      ProcessModel process = new ProcessModel(p.getName(),
+              String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),
+              String.valueOf(p.getThreadCount()),
+              "desc",
+              state,
+              new ArrayList<Integer>());
       procs.add(process);
-      System.out.format(" %5d %5.1f %4.1f %9s %9s %s%n", p.getProcessID(),
-        100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime(),
-        100d * p.getResidentSetSize() / memory.getTotal(), FormatUtil.formatBytes(p.getVirtualSize()),
-        FormatUtil.formatBytes(p.getResidentSetSize()), p.getName());
     }
 
     return procs;
@@ -56,5 +54,14 @@ public class SystemCallDriver {
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
   }
 
+  public static int[] getCPUUsage(OperatingSystem os, GlobalMemory memory) {
+    // TODO:
+    return null;
+  }
 
+  public static long[] getMemoryUsage(OperatingSystem os, GlobalMemory memory) {
+    long time = System.currentTimeMillis();
+    long memUsed = (memory.getTotal() - memory.getAvailable()) / 1073741824;
+    return new long[] { time, memUsed };
+  }
 }

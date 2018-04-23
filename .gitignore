@@ -8,3 +8,7 @@ test.DB
 # COMPILED CODE
 target/
 *.class
+
+# LOGS
+*.log
+log
