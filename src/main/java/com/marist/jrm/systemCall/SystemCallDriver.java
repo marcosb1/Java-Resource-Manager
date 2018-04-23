@@ -123,12 +123,23 @@ public class SystemCallDriver {
   // TODO: create buildApplication functions which will take in a ArrayList<Process>
 
 
+  /**
+   * Simple method to print some basic info regarding the system.
+   * @param computerSystem
+   */
   public static void printBasicInfo(final ComputerSystem computerSystem) {
     System.out.println("manufacturer: " + computerSystem.getManufacturer());
     System.out.println("model: " + computerSystem.getModel());
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
   }
 
+  /**
+   * Method to obtain the total memory, memory available, and memory used.
+   * Values (in gigabytes) are returned in an array of doubles in the following order:
+   * [totalMemory,memoryUsed,memoryAvailable]
+   * @param memory
+   * @return
+   */
   public static Double[] getMemoryMetrics(GlobalMemory memory) {
     Double[] memoryUsageVals = new Double[3];
 
@@ -155,6 +166,12 @@ public class SystemCallDriver {
     memoryUsageVals[2] = memAvail;
 
     return memoryUsageVals;
+  }
+
+  public static long[] getMemoryUsage(OperatingSystem os, GlobalMemory memory) {
+    long time = System.currentTimeMillis();
+    long memUsed = (memory.getTotal() - memory.getAvailable()) / 1073741824;
+    return new long[] { time, memUsed };
   }
 
 }
