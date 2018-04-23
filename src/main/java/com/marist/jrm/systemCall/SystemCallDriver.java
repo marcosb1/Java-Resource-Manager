@@ -40,11 +40,11 @@ public class SystemCallDriver {
       threadCurrentCPU.put(info.getThreadId(), threadMxBean.getThreadCpuTime(info.getThreadId()));
     }
 
-// CPU over all processes
-//int nrCPUs = osMxBean.getAvailableProcessors();
-// total CPU: CPU % can be more than 100% (devided over multiple cpus)
+    // CPU over all processes
+    //int nrCPUs = osMxBean.getAvailableProcessors();
+    // total CPU: CPU % can be more than 100% (devided over multiple cpus)
     long nrCPUs = 1;
-// elapsedTime is in ms.
+    // elapsedTime is in ms.
     long elapsedTime = (upTime - initialUptime);
     for (ThreadInfo info : threadInfos) {
       // elapsedCpu is in ns
@@ -56,7 +56,7 @@ public class SystemCallDriver {
       }
     }
 
-// threadCPUUsage contains cpu % per thread
+ // threadCPUUsage contains cpu % per thread
     System.out.println(threadCPUUsage);
   }
 
@@ -71,7 +71,7 @@ public class SystemCallDriver {
     OperatingSystem os = si.getOperatingSystem();
 
     printBasicInfo(hal.getComputerSystem());
-    getProcesses(os, hal.getMemory());
+    //getProcesses(os, hal.getMemory());
 
     calcMemoryUsagePerThread();
 
