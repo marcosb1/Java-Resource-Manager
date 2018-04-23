@@ -36,12 +36,18 @@ public class GUIDriver extends Application {
 
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
-    private final int REFRESH_INTERVAL = 2000;
+    private final int REFRESH_INTERVAL = 1000;
 
     private Stage applicationWindow;
     private BorderPane layout;
     private LineChart<Number, Number> cpuUsageLineChart;
     private LineChart<Number, Number> memoryUsageLineChart;
+    private Label totalMemoryValueLabel = new Label();
+    private Label memoryUsedValueLabel = new Label();
+    private Label memoryAvailableValueLabel = new Label();
+    private Label numThreadsValueLabel = new Label();
+    private Label numProcessesValueLabel = new Label();
+    private Label upTimeValueLabel = new Label();
 
     private Double totalMemoryValue = 0.0;
     private Double memoryUsedValue = 0.0;
@@ -199,9 +205,10 @@ public class GUIDriver extends Application {
         //      Data Panels Line Chart
         HBox performancePanelsLayout = new HBox();
 
-        HBox totalMemoryBox = new HBox(new Label("Total Memory: "), new Label(this.totalMemoryValue + ""));
-        HBox memoryUsedBox = new HBox(new Label("Memory Used: "), new Label(this.memoryUsedValue + ""));
-        HBox memoryAvailable = new HBox(new Label("Memory Available: "), new Label(this.memoryAvailableValue + ""));
+
+        HBox totalMemoryBox = new HBox(new Label("Total Memory: "), this.totalMemoryValueLabel);
+        HBox memoryUsedBox = new HBox(new Label("Memory Used: "), this.memoryUsedValueLabel);
+        HBox memoryAvailable = new HBox(new Label("Memory Available: "), this.memoryAvailableValueLabel);
         VBox physicalMemoryComponents = new VBox();
         physicalMemoryComponents.getChildren().addAll(totalMemoryBox, memoryUsedBox, memoryAvailable);
         TitledPane physicalMemoryViewer = new TitledPane("Physical Memory", physicalMemoryComponents);
@@ -209,9 +216,9 @@ public class GUIDriver extends Application {
         physicalMemoryViewer.setMinHeight(200);
         physicalMemoryViewer.setCollapsible(false);
 
-        HBox threadsBox = new HBox(new Label("Threads: "), new Label(this.numThreadsValue + ""));
-        HBox processesBox = new HBox(new Label("Processes: "), new Label(this.numProcessesValue + ""));
-        HBox upTimeBox = new HBox(new Label("Up Time: "), new Label(this.upTimeValue));
+        HBox threadsBox = new HBox(new Label("Threads: "), this.numThreadsValueLabel);
+        HBox processesBox = new HBox(new Label("Processes: "), this.numProcessesValueLabel);
+        HBox upTimeBox = new HBox(new Label("Up Time: "), this.upTimeValueLabel);
         VBox systemViewerComponents = new VBox();
         systemViewerComponents.getChildren().addAll(threadsBox, processesBox, upTimeBox);
         TitledPane systemViewer = new TitledPane("System", systemViewerComponents);
@@ -263,14 +270,14 @@ public class GUIDriver extends Application {
         this.setProcessTableContents(SystemCallDriver.getProcesses(this.os, this.hal.getMemory()));
         // System Call TODO
         Double[] memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
-        this.totalMemoryValue = memoryValues[0];
-        this.memoryUsedValue = memoryValues[1];
-        this.memoryAvailableValue = memoryValues[2];
-        this.numThreadsValue = os.getThreadCount();
-        this.numProcessesValue = os.getProcessCount();
-        this.upTimeValue = FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime());
+        this.setTotalMemoryValue(memoryValues[0]);
+        this.setMemoryUsedValue(memoryValues[1]);
+        this.setMemoryAvailableValue(memoryValues[2]);
+        this.setNumThreadsValue(os.getThreadCount());
+        this.setNumProcessesValue(os.getProcessCount());
+        this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
-        this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
+        //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
 
         // Application TODO
@@ -297,7 +304,7 @@ public class GUIDriver extends Application {
     }
 
     /** setProcessTableContents
-     *
+     * 
      * @param active
      */
     public void setProcessTableContents(ArrayList<ProcessModel> active) {
@@ -312,81 +319,81 @@ public class GUIDriver extends Application {
      * @param newValue
      */
     public void setTotalMemoryValue(Double newValue) {
-        this.totalMemoryValue = newValue;
+        this.totalMemoryValueLabel.setText(newValue + "");
     }
 
     /** getTotalMemoryValue
      * Use this getter to retrieve the total memory of the system (at a certain point) for statistics purposes
      * @return this.totalMemoryValue
      */
-    public double getTotalMemoryValue() { return this.totalMemoryValue; }
+    public String getTotalMemoryValue() { return this.totalMemoryValueLabel.getText(); }
 
     /** setMemoryUsedValue
      *
      * @param newValue
      */
-    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValue = newValue; }
+    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
 
     /** getMemoryUsedValue
      * Use this getter to retrieve the memory used value (out of the totalMemoryValue) for statistics purposes
      * @return this.memoryUsedValue
      */
-    public double getMemoryUsedValue() { return this.memoryUsedValue; }
+    public String getMemoryUsedValue() { return this.memoryUsedValueLabel.getText(); }
 
     /** setMemoryAvailableValue
      *
      * @param newValue
      */
-    public void setMemoryAvailableValue(double newValue) { this.memoryAvailableValue = newValue; }
+    public void setMemoryAvailableValue(double newValue) { this.memoryAvailableValueLabel.setText(newValue + ""); }
 
     /** getMemoryAvailableValue
      * Use this getter to retrieve the memory available (memory left that can be used) of the system for statistics
      * purposes
      * @return this.memoryAvailableValue
      */
-    public double getMemoryAvailableValue() { return this.memoryAvailableValue; }
+    public String getMemoryAvailableValue() { return this.memoryAvailableValueLabel.getText(); }
 
     /** setNumThreadsValue
      *
      * @param newValue
      */
     public void setNumThreadsValue(int newValue) {
-        this.numThreadsValue = newValue;
+        this.numThreadsValueLabel.setText(newValue + "");
     }
 
     /** getNumThreadsValue
      * Use this getter to retrieve the number of threads currently used by the system for statistics purposes
      * @return this.numThreadsValue
      */
-    public int getNumThreadsValue() { return this.numThreadsValue; }
+    public String getNumThreadsValue() { return this.numThreadsValueLabel.getText(); }
 
     /** setNumProcessesValue
      *
      * @param newValue
      */
     public void setNumProcessesValue(int newValue) {
-        this.numProcessesValue = newValue;
+        this.numProcessesValueLabel.setText(newValue + "");
     }
 
     /** getNumProcessesValue
      * Use this getter to retrieve the number of concurrent processes for statistics purposes
      * @return this.numProcessesValue
      */
-    public int getNumProcessesValue() { return this.numProcessesValue; }
+    public String getNumProcessesValue() { return this.numProcessesValueLabel.getText(); }
 
     /** setUpTimeValue
      *
      * @param newValue
      */
     public void setUpTimeValue(String newValue) {
-        this.upTimeValue = newValue;
+        this.upTimeValueLabel.setText(newValue + "");
     }
 
     /** getUpTimeValue
      * Use this getter to retrieve the up time of the system for statistics purposes
      * @return this.upTimeValue
      */
-    public String getUpTimeValue() { return this.upTimeValue; }
+    public String getUpTimeValue() { return this.upTimeValueLabel.getText(); }
 
     private void updateCPULineChart(long[] newUsage) {
         this.cpuUsages.add(newUsage);

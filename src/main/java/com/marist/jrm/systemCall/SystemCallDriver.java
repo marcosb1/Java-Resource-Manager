@@ -102,7 +102,7 @@ public class SystemCallDriver {
     ArrayList<ProcessModel> procs = new ArrayList<>();
 
     System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
-    for (int i = 0; i < OSprocs.size() && i < 5; i++) {
+    for (int i = 0; i < OSprocs.size() && i < 50; i++) {
       OSProcess p = OSprocs.get(i);
 
       OSProcess.State state = p.getState();
@@ -145,8 +145,6 @@ public class SystemCallDriver {
 
     String memTotalString = FormatUtil.formatBytes(memory.getTotal());
     memTotalString = memTotalString.substring(0,memTotalString.length()-3);
-
-
 
     Double memAvail = Double.parseDouble(memAvailString);
     Double memTotal = Double.parseDouble(memTotalString);
