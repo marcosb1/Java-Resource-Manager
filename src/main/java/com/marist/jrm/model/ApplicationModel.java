@@ -10,11 +10,7 @@ public class ApplicationModel {
 
     public ApplicationModel(String name,
                             String status,
-<<<<<<< HEAD
-                            ArrayList<Process> processes) {
-=======
                             ArrayList<ProcessModel> processes) {
->>>>>>> origin/build-dev
         this.setName(name);
         this.setStatus(status);
         this.setProcesses(processes);
@@ -36,20 +32,11 @@ public class ApplicationModel {
         this.status = status;
     }
 
-<<<<<<< HEAD
-    public ArrayList<Process> getProcesses() {
+    public ArrayList<ProcessModel> getProcesses() {
         return this.processes;
     }
 
-    public void setProcesses(ArrayList<Process> processes) {
-        this.processes = processes;
-=======
-    public ArrayList<ProcessModel> getProcesses() {
-      return this.processes;
-    }
-
     public void setProcesses(ArrayList<ProcessModel> processes) {
-      this.processes = processes;
->>>>>>> origin/build-dev
+        this.processes = processes;
     }
 }
