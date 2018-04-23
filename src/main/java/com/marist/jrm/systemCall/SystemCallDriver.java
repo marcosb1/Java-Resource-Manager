@@ -16,6 +16,21 @@ import java.util.*;
 
 public class SystemCallDriver {
 
+  public static void main(String[] args) {
+
+    SystemInfo si = new oshi.SystemInfo();
+
+    HardwareAbstractionLayer hal = si.getHardware();
+    OperatingSystem os = si.getOperatingSystem();
+
+    printBasicInfo(hal.getComputerSystem());
+    getProcesses(os, hal.getMemory());
+
+    calcMemoryUsagePerThread();
+
+
+  }
+
   /**
    * Method to calculate the memory usage per individual thread.
    * This method uses the java.lang.management.* thread classes
@@ -69,24 +84,6 @@ public class SystemCallDriver {
     System.out.println(threadCPUUsage);
   }
 
-
-
-
-  public static void main(String[] args) {
-
-    SystemInfo si = new oshi.SystemInfo();
-
-    HardwareAbstractionLayer hal = si.getHardware();
-    OperatingSystem os = si.getOperatingSystem();
-
-    printBasicInfo(hal.getComputerSystem());
-    getProcesses(os, hal.getMemory());
-
-    calcMemoryUsagePerThread();
-
-
-  }
-
   /**
    * Method to obtain all processes currently running on the machine.
    * For each process running, a ProcessModel object is constructed and added
@@ -132,7 +129,7 @@ public class SystemCallDriver {
     System.out.println("model: " + computerSystem.getModel());
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
   }
-
+  
   /**
    * Method to obtain the total memory, memory available, and memory used.
    * Values (in gigabytes) are returned in an array of doubles in the following order:
