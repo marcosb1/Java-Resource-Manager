@@ -29,7 +29,7 @@ public class TestThreads {
   public void testLaunch() throws InterruptedException, IOException {
     GenerateProcess gp = new GenerateProcess();
     GenerateProcess.main(new String[0]);
-    ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
+    ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(this.os, this.hal.getMemory());
     for (ProcessModel p : processes) {
       if (p.getProcessName().equals("java.exe")) {
         assertTrue(true);
