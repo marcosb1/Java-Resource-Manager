@@ -1,14 +1,16 @@
 package com.marist.jrm.model;
 
+import java.util.ArrayList;
+
 public class ApplicationModel {
 
     private String name;
     private String status;
     private ArrayList<Process> processes;
 
-    public Application(String name,
-                   String status,
-                   ArrayList<Process> processes) {
+    public ApplicationModel(String name,
+                            String status,
+                            ArrayList<Process> processes) {
         this.setName(name);
         this.setStatus(status);
         this.setProcesses(processes);
@@ -31,10 +33,10 @@ public class ApplicationModel {
     }
 
     public ArrayList<Process> getProcesses() {
-      return this.processes;
+        return this.processes;
     }
 
     public void setProcesses(ArrayList<Process> processes) {
-      this.processes = processes;
+        this.processes = processes;
     }
 }
