@@ -16,6 +16,19 @@ import java.util.*;
 
 public class SystemCallDriver {
 
+  public static void main(String[] args) {
+
+    SystemInfo si = new oshi.SystemInfo();
+
+    HardwareAbstractionLayer hal = si.getHardware();
+    OperatingSystem os = si.getOperatingSystem();
+
+    printBasicInfo(hal.getComputerSystem());
+    //getProcesses(os, hal.getMemory());
+
+    calcMemoryUsagePerThread();
+  }
+
   private static void calcMemoryUsagePerThread() {
     int sampleTime = 10000;
     ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
@@ -60,19 +73,6 @@ public class SystemCallDriver {
     System.out.println(threadCPUUsage);
   }
 
-  public static void main(String[] args) {
-
-    SystemInfo si = new oshi.SystemInfo();
-
-    HardwareAbstractionLayer hal = si.getHardware();
-    OperatingSystem os = si.getOperatingSystem();
-
-    printBasicInfo(hal.getComputerSystem());
-    //getProcesses(os, hal.getMemory());
-
-    calcMemoryUsagePerThread();
-  }
-
   public static ArrayList<ProcessModel> getProcesses(OperatingSystem os, GlobalMemory memory) {
     // Sort by highest CPU
     List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
@@ -103,9 +103,26 @@ public class SystemCallDriver {
     System.out.println("serialnumber: " + computerSystem.getSerialNumber());
   }
 
-  public static int[] getCPUUsage(OperatingSystem os, GlobalMemory memory) {
-    // TODO:
-    return null;
+  public static long[] getCPUUsage(OperatingSystem os, GlobalMemory memory) {
+    long time = System.currentTimeMillis();
+    long cpuUsed = 0;
+    List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
+    long previousTime = 0;
+    for (int i = 0; i < OSprocs.size() && i < 50; i++) {
+      OSProcess p = OSprocs.get(i);
+      long currentTime = p.getKernelTime() + p.getUserTime();
+
+      if (previousTime != -1) {
+        // If we have both a previous and a current time
+        // we can calculate the CPU usage
+        long timeDifference = currentTime - previousTime;
+        cpuUsed = (100d * (timeDifference / ((double) 1000))) / cpuNumber;
+      }
+
+      previousTime = currentTime;
+      cpuUsed += 100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime();
+    }
+    return new long[] { time, cpuUsed };
   }
 
   public static long[] getMemoryUsage(OperatingSystem os, GlobalMemory memory) {

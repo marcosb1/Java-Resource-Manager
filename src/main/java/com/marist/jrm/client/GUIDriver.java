@@ -158,8 +158,21 @@ public class GUIDriver extends Application {
         performanceTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         //      CPU Usage Line Chart
+        this.cpuXAxis.setForceZeroInRange(false);
+        this.cpuXAxis.setAnimated(false);
+        this.cpuXAxis.setAutoRanging(false);
+        this.cpuXAxis.setTickUnit(200000);
+
+        this.cpuYAxis.setLowerBound(0);
+        this.cpuYAxis.setUpperBound(100);
+        this.cpuYAxis.setAutoRanging(false);
+        this.cpuYAxis.setTickUnit(20);
+
         this.cpuUsageLineChart = new LineChart<Number, Number>(this.cpuXAxis, this.cpuYAxis);
+        this.cpuUsageLineChart.setCreateSymbols(false);
+        this.cpuUsageLineChart.setAnimated(false);
         this.cpuUsageLineChart.setTitle("CPU Usage");
+
         this.cpuUsageSeries.setName("CPU Consumption");
         this.cpuUsageLineChart.getData().add(this.cpuUsageSeries);
 
@@ -255,7 +268,7 @@ public class GUIDriver extends Application {
         // TODO: update numProcessesValue
         // TODO: update upTimeValue
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
-        // TODO: update CPU line chart
+        this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
 
         // Application TODO
@@ -380,7 +393,12 @@ public class GUIDriver extends Application {
     public String getUpTimeValue() { return this.upTimeValue; }
 
     private void updateCPULineChart(long[] newUsage) {
-
+        this.cpuUsages.add(newUsage);
+        long x = newUsage[0];
+        long y = newUsage[1];
+        this.cpuUsageSeries.getData().add(new XYChart.Data(x, y));
+        this.cpuXAxis.setLowerBound(this.cpuUsages.get(0)[0]);
+        this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
     }
 
     private void updateMemoryLineChart(long[] newUsage) {
