@@ -33,10 +33,10 @@ public class ApplicationModel {
     }
 
     public ArrayList<ProcessModel> getProcesses() {
-      return this.processes;
+        return this.processes;
     }
 
     public void setProcesses(ArrayList<ProcessModel> processes) {
-      this.processes = processes;
+        this.processes = processes;
     }
 }

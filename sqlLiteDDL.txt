@@ -1,7 +1,9 @@
 CREATE TABLE APPLICATION(
    appID INT PRIMARY KEY     NOT NULL,
    appName           TEXT    NOT NULL,
-   appDescription    TEXT     NOT NULL
+   appDescription    TEXT     NOT NULL,
+   appSysID INT NOT NULL,
+   FOREIGN KEY(appSysID) REFERENCES SYSTEM(sysID)
    
 );
 
@@ -21,7 +23,8 @@ CREATE TABLE THREAD(
 );
 
 CREATE TABLE SYSTEM(
-   sysTime INT PRIMARY KEY     NOT NULL,
+   sysID PRIMARY KEY NOT NULL,
+   sysTime INT      NOT NULL,
    sysCPUUsage           INT    NOT NULL,
    sysUptime    INT     NOT NULL,
    sysPhysicalMemory INT     NOT NULL,
