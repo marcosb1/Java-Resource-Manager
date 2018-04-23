@@ -34,7 +34,6 @@ public class GUIDriver extends Application {
     public TableView<ProcessModel> processTable;
 
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
-    private final static int TICK_UNIT = 2000;
     private final static Level CURRENT_LEVEL = Level.INFO;
     private final int REFRESH_INTERVAL = 2000;
 
@@ -137,23 +136,19 @@ public class GUIDriver extends Application {
         processesTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
         TableColumn<ProcessModel, String> processNameCol = new TableColumn<>("Process Name");
-        processNameCol.setMinWidth(150);
+        processNameCol.setMinWidth(200);
         processNameCol.setCellValueFactory(new PropertyValueFactory<>("processName"));
 
         TableColumn<ProcessModel, String> memoryCol = new TableColumn<>("Memory");
-        memoryCol.setMinWidth(150);
+        memoryCol.setMinWidth(200);
         memoryCol.setCellValueFactory(new PropertyValueFactory<>("memory"));
 
         TableColumn<ProcessModel, String> threadCountCol = new TableColumn<>("Thread Count");
-        threadCountCol.setMinWidth(150);
+        threadCountCol.setMinWidth(200);
         threadCountCol.setCellValueFactory(new PropertyValueFactory<>("threadCount"));
 
-        TableColumn<ProcessModel, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setMinWidth(150);
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-
         processTable = new TableView<>();
-        processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol, descriptionCol);
+        processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol);
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
@@ -172,7 +167,6 @@ public class GUIDriver extends Application {
         this.memoryXAxis.setForceZeroInRange(false);
         this.memoryXAxis.setAnimated(false);
         this.memoryXAxis.setAutoRanging(false);
-        //this.memoryXAxis.setTickUnit(TICK_UNIT);
 
         this.memoryYAxis.setLowerBound(0);
         this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / 1073741824);
@@ -237,6 +231,7 @@ public class GUIDriver extends Application {
         // TODO: which is better for a scene object, private or public?
         Scene applicationScene = new Scene(this.layout, 600, 800);
         this.applicationWindow.setScene(applicationScene);
+        this.applicationWindow.setResizable(false);
         this.applicationWindow.show();
     }
 
@@ -258,7 +253,6 @@ public class GUIDriver extends Application {
         // TODO: update numProcessesValue
         // TODO: update upTimeValue
         // TODO: update CPU line chart
-        // TODO: update memory line chart
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
 
         // Application TODO
@@ -383,19 +377,7 @@ public class GUIDriver extends Application {
     public String getUpTimeValue() { return this.upTimeValue; }
 
     private void updateCPULineChart(long[] newUsage) {
-        // TODO: What do we need to get the CPU usage?
-        // update x-axis (what about y-axis?)
-        this.cpuXAxis.setLowerBound(this.cpuUsages.get(0)[0]);
-        // modify usages list
-        this.cpuUsages.remove(0);
-        this.cpuUsages.add(newUsage);
-        // update chart
-        this.cpuUsageSeries.getData().removeAll();
-        for (long[] cpuUsage : this.cpuUsages) {
-            long x = cpuUsage[0];
-            long y = cpuUsage[1];
-            this.cpuUsageSeries.getData().add(new XYChart.Data(x, y));
-        }
+
     }
 
     private void updateMemoryLineChart(long[] newUsage) {
