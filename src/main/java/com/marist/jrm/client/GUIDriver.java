@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
+import oshi.util.FormatUtil;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -42,9 +43,9 @@ public class GUIDriver extends Application {
     private LineChart<Number, Number> cpuUsageLineChart;
     private LineChart<Number, Number> memoryUsageLineChart;
 
-    private int totalMemoryValue = 0;
-    private int memoryUsedValue = 0;
-    private int memoryAvailableValue = 0;
+    private Double totalMemoryValue = 0.0;
+    private Double memoryUsedValue = 0.0;
+    private Double memoryAvailableValue = 0.0;
     private int numThreadsValue = 0;
     private int numProcessesValue = 0;
     private String upTimeValue = "";
@@ -248,12 +249,13 @@ public class GUIDriver extends Application {
         this.processTable.getItems().clear();
         this.setProcessTableContents(SystemCallDriver.getProcesses(this.os, this.hal.getMemory()));
         // System Call TODO
-        // TODO: update totalMemoryValue
-        // TODO: update memoryUsedValue
-        // TODO: update memoryAvailableValue
-        // TODO: update numThreadsValue
-        // TODO: update numProcessesValue
-        // TODO: update upTimeValue
+        Double[] memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
+        this.totalMemoryValue = memoryValues[0];
+        this.memoryUsedValue = memoryValues[1];
+        this.memoryAvailableValue = memoryValues[2];
+        this.numThreadsValue = os.getThreadCount();
+        this.numProcessesValue = os.getProcessCount();
+        this.upTimeValue = FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime());
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
         // TODO: update CPU line chart
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.os, this.hal.getMemory()));
@@ -296,7 +298,7 @@ public class GUIDriver extends Application {
      *
      * @param newValue
      */
-    public void setTotalMemoryValue(int newValue) {
+    public void setTotalMemoryValue(Double newValue) {
         this.totalMemoryValue = newValue;
     }
 
@@ -304,38 +306,32 @@ public class GUIDriver extends Application {
      * Use this getter to retrieve the total memory of the system (at a certain point) for statistics purposes
      * @return this.totalMemoryValue
      */
-    public int getTotalMemoryValue() {
-        return this.totalMemoryValue;
-    }
+    public double getTotalMemoryValue() { return this.totalMemoryValue; }
 
     /** setMemoryUsedValue
      *
      * @param newValue
      */
-    public void setMemoryUsedValue(int newValue) {
-        this.memoryUsedValue = newValue;
-    }
+    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValue = newValue; }
 
     /** getMemoryUsedValue
      * Use this getter to retrieve the memory used value (out of the totalMemoryValue) for statistics purposes
      * @return this.memoryUsedValue
      */
-    public int getMemoryUsedValue() { return this.memoryUsedValue; }
+    public double getMemoryUsedValue() { return this.memoryUsedValue; }
 
     /** setMemoryAvailableValue
      *
      * @param newValue
      */
-    public void setMemoryAvailableValue(int newValue) {
-        this.memoryAvailableValue = newValue;
-    }
+    public void setMemoryAvailableValue(double newValue) { this.memoryAvailableValue = newValue; }
 
     /** getMemoryAvailableValue
      * Use this getter to retrieve the memory available (memory left that can be used) of the system for statistics
      * purposes
      * @return this.memoryAvailableValue
      */
-    public int getMemoryAvailableValue() { return this.memoryAvailableValue; }
+    public double getMemoryAvailableValue() { return this.memoryAvailableValue; }
 
     /** setNumThreadsValue
      *
