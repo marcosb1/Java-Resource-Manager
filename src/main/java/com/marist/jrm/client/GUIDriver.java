@@ -1,7 +1,7 @@
 package com.marist.jrm.client;
 
 import com.marist.jrm.client.components.ConfirmBox;
-import com.marist.jrm.model.Process;
+import com.marist.jrm.model.ProcessModel;
 import com.marist.jrm.systemCall.SystemCallDriver;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class GUIDriver extends Application {
 
-    public TableView<Process> processTable;
+    public TableView<ProcessModel> processTable;
 
     private final int refreshInterval = 2000;
 
@@ -123,19 +123,19 @@ public class GUIDriver extends Application {
         processesTab.setClosable(false);
         processesTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
-        TableColumn<Process, String> processNameCol = new TableColumn<>("Process Name");
+        TableColumn<ProcessModel, String> processNameCol = new TableColumn<>("Process Name");
         processNameCol.setMinWidth(150);
         processNameCol.setCellValueFactory(new PropertyValueFactory<>("processName"));
 
-        TableColumn<Process, String> memoryCol = new TableColumn<>("Memory");
+        TableColumn<ProcessModel, String> memoryCol = new TableColumn<>("Memory");
         memoryCol.setMinWidth(150);
         memoryCol.setCellValueFactory(new PropertyValueFactory<>("memory"));
 
-        TableColumn<Process, String> threadCountCol = new TableColumn<>("Thread Count");
+        TableColumn<ProcessModel, String> threadCountCol = new TableColumn<>("Thread Count");
         threadCountCol.setMinWidth(150);
         threadCountCol.setCellValueFactory(new PropertyValueFactory<>("threadCount"));
 
-        TableColumn<Process, String> descriptionCol = new TableColumn<>("Description");
+        TableColumn<ProcessModel, String> descriptionCol = new TableColumn<>("Description");
         descriptionCol.setMinWidth(150);
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
 
@@ -228,6 +228,7 @@ public class GUIDriver extends Application {
         // update process table elements
         this.processTable.getItems().clear();
         this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
+        // System Call TODO
         // TODO: update totalMemoryValue
         // TODO: update memoryUsedValue
         // TODO: update memoryAvailableValue
@@ -237,6 +238,14 @@ public class GUIDriver extends Application {
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
         // TODO: update CPU line chart
         // TODO: update memory line chart
+
+        // Application TODO
+        // TODO: List of applications for application package
+        // TODO: From there nest Process list in Application model insert into db
+        // TODO: Get num threads for that + usages
+
+        // @everyone TODO
+        // TODO: Figure out how we're gonna due system time
     }
 
     /** closeProgram
@@ -247,6 +256,8 @@ public class GUIDriver extends Application {
         // TODO: post processing, we want to finish any transactions in progress
         boolean confirmed = ConfirmBox.display("Close Program", "Are you sure you want to exit?");
 
+        // TODO: Should we clear DB here?
+
         if (confirmed)
             this.applicationWindow.close();
     }
@@ -255,9 +266,9 @@ public class GUIDriver extends Application {
      *
      * @param active
      */
-    public void setProcessTableContents(ArrayList<Process> active) {
+    public void setProcessTableContents(ArrayList<ProcessModel> active) {
         // Add processes to the table
-        for (Process p : active) {
+        for (ProcessModel p : active) {
             this.processTable.getItems().add(p);
         }
     }
