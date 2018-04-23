@@ -323,17 +323,6 @@ public class GUIDriver extends Application {
         this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
     }
 
-    /**
-     *
-     * @param active
-     */
-    public void setProcessTableContents(ArrayList<Process> active) {
-        // Add processes to the table
-        for (Process p : active) {
-            this.processTable.getItems().add(p);
-        }
-    }
-
     /** setTotalMemoryValue
      *
      * @param newValue
