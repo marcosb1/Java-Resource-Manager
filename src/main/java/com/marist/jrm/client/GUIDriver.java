@@ -306,7 +306,7 @@ public class GUIDriver extends Application {
 
     /** setProcessTableContents
      * 
-     * @param active
+     * @param active List containing the active processes to be placed in the table
      */
     public void setProcessTableContents(ArrayList<ProcessModel> active) {
         // Add processes to the table
@@ -317,15 +317,7 @@ public class GUIDriver extends Application {
 
     /** setTotalMemoryValue
      *
-     */
-    public void updateProcesses() {
-        this.processTable.getItems().clear();
-        this.setProcessTableContents(SystemCallDriver.getProcesses(os, hal.getMemory()));
-    }
-
-    /** setTotalMemoryValue
-     *
-     * @param newValue
+     * @param newValue new total memory value
      */
     public void setTotalMemoryValue(Double newValue) {
         this.totalMemoryValueLabel.setText(newValue + "");
@@ -333,38 +325,38 @@ public class GUIDriver extends Application {
 
     /** getTotalMemoryValue
      * Use this getter to retrieve the total memory of the system (at a certain point) for statistics purposes
-     * @return this.totalMemoryValue
+     * @return this.totalMemoryValueLabel.getText() contents of the totalMemoryValue label
      */
     public String getTotalMemoryValue() { return this.totalMemoryValueLabel.getText(); }
 
     /** setMemoryUsedValue
      *
-     * @param newValue
+     * @param newValue new memory used value
      */
     public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
 
     /** getMemoryUsedValue
      * Use this getter to retrieve the memory used value (out of the totalMemoryValue) for statistics purposes
-     * @return this.memoryUsedValue
+     * @return this.memoryUsedValueLabel.getText() contents of the memoryUsedValue label
      */
     public String getMemoryUsedValue() { return this.memoryUsedValueLabel.getText(); }
 
     /** setMemoryAvailableValue
      *
-     * @param newValue
+     * @param newValue new memory available value
      */
     public void setMemoryAvailableValue(double newValue) { this.memoryAvailableValueLabel.setText(newValue + ""); }
 
     /** getMemoryAvailableValue
      * Use this getter to retrieve the memory available (memory left that can be used) of the system for statistics
      * purposes
-     * @return this.memoryAvailableValue
+     * @return this.memoryAvailableValueLabel.getText() contents of the memoryAvailableValue label
      */
     public String getMemoryAvailableValue() { return this.memoryAvailableValueLabel.getText(); }
 
     /** setNumThreadsValue
      *
-     * @param newValue
+     * @param newValue new number of threads value
      */
     public void setNumThreadsValue(int newValue) {
         this.numThreadsValueLabel.setText(newValue + "");
@@ -372,13 +364,13 @@ public class GUIDriver extends Application {
 
     /** getNumThreadsValue
      * Use this getter to retrieve the number of threads currently used by the system for statistics purposes
-     * @return this.numThreadsValue
+     * @return this.numThreadsValueLabel.getText() contents of the numThreadsValue label
      */
     public String getNumThreadsValue() { return this.numThreadsValueLabel.getText(); }
 
     /** setNumProcessesValue
      *
-     * @param newValue
+     * @param newValue new number of processes value
      */
     public void setNumProcessesValue(int newValue) {
         this.numProcessesValueLabel.setText(newValue + "");
@@ -386,13 +378,13 @@ public class GUIDriver extends Application {
 
     /** getNumProcessesValue
      * Use this getter to retrieve the number of concurrent processes for statistics purposes
-     * @return this.numProcessesValue
+     * @return this.numProcessesValueLabel.getText() contents of the numProcessesValue label
      */
     public String getNumProcessesValue() { return this.numProcessesValueLabel.getText(); }
 
     /** setUpTimeValue
      *
-     * @param newValue
+     * @param newValue new up time value
      */
     public void setUpTimeValue(String newValue) {
         this.upTimeValueLabel.setText(newValue + "");
@@ -400,10 +392,15 @@ public class GUIDriver extends Application {
 
     /** getUpTimeValue
      * Use this getter to retrieve the up time of the system for statistics purposes
-     * @return this.upTimeValue
+     * @return this.upTimeValueLabel.getText() contents of the upTimeValue label
      */
     public String getUpTimeValue() { return this.upTimeValueLabel.getText(); }
 
+    /** updateCPULineChart
+     * Creates an update scroll effect for the CPU usage line chart by resetting the upper and lower bounds of the
+     * chart with new values
+     * @param newUsage new value to be added to the line chart
+     */
     private void updateCPULineChart(long[] newUsage) {
         this.cpuUsages.add(newUsage);
         long x = newUsage[0];
@@ -413,6 +410,11 @@ public class GUIDriver extends Application {
         this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
     }
 
+    /** updateMemoryLineChart
+     * Creates an update scroll effect for the memory usage line chart by resetting the upper and lower bounds of the
+     * chart with new values
+     * @param newUsage new value to be added to the line chart
+     */
     private void updateMemoryLineChart(long[] newUsage) {
         this.memoryUsages.add(newUsage);
         long x = newUsage[0];
