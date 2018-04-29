@@ -17,6 +17,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <!-- Build an executable JAR -->
                 <groupId>org.apache.maven.plugins</groupId>
@@ -32,6 +33,7 @@
                     </archive>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -53,6 +55,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.8</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includes>
+                        <include>*Test*.java</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -79,6 +99,13 @@
             <artifactId>oshi-core</artifactId>
             <version>3.4.4</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.21.0.1</version>
         </dependency>
 
     </dependencies>

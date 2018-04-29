@@ -1,10 +1,12 @@
 package com.marist.jrm.application;
 
 public class ApplicationDriver {
-  
+
+
     public static void main(String Args[]){
-        SQLiteJDBCDriverConnection.connect();
+        //initialize the database at startup
         SQLiteDBInit.initDB();
+
     }
   
 }

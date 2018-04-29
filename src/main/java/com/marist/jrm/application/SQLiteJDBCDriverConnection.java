@@ -6,22 +6,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- *
  * @author sqlitetutorial.net
  */
+//this class is a generic JDBC driver connection class
 public class SQLiteJDBCDriverConnection {
     /**
      * Connect to database
      */
-    public static void connect() {
+    public static Connection connect() {
         Connection conn = null;
         try {
             // db parameters
+            //set the url connectino to the jrmDB file
             String url = "jdbc:sqlite:src/resources/jrmDB.db";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
-
-            System.out.println("Connection to SQLite has been established.");
+            conn = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            //if (conn == null){
+            //System.out.println("conn failed");
+            //}
+            //System.out.println("Connection to SQLite has been established.");
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -34,6 +37,7 @@ public class SQLiteJDBCDriverConnection {
                 System.out.println(ex.getMessage());
             }
         }
+        return conn;
     }
     /**
      * @param args the command line arguments
