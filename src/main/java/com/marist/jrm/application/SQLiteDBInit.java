@@ -53,7 +53,7 @@ public class SQLiteDBInit {
                     "CREATE TABLE APPLICATION(" +
                             "appID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "appName           TEXT     NOT NULL," +
-                            "appDescription    TEXT     NOT NULL," +
+                            "appStatus    TEXT     NOT NULL," +
                             "appSysID   INTEGER             NOT NULL," +
                             "FOREIGN KEY(appSysID) REFERENCES SYSTEM(sysID))";
             //execute application table creation
@@ -67,8 +67,10 @@ public class SQLiteDBInit {
                     "CREATE TABLE PROCESS(" +
                             "procID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "procAppID           INTEGER    NOT NULL," +
-                            "procMemory    INTEGER     NOT NULL," +
+                            "procMemory    REAL      NOT NULL," +
                             "procThreadCount INTEGER     NOT NULL," +
+                            "procDesc    TEXT     NOT NULL," +
+                            "procState    TEXT     NOT NULL," +
                             "FOREIGN KEY(procAppID) REFERENCES APPLICATION(appID))";
             //execute Process table creation
             stmt.executeUpdate(sql);
@@ -81,7 +83,7 @@ public class SQLiteDBInit {
                     "CREATE TABLE THREAD(" +
                             "threadID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "threadProcID INTEGER NOT NULL," +
-                            "threadMemory INTEGER NOT NULL," +
+                            "threadMemory REAL  NOT NULL," +
                             "FOREIGN KEY(threadProcID) REFERENCES PROCESS(procID))";
             //execute Thread table creation
             stmt.executeUpdate(sql);
