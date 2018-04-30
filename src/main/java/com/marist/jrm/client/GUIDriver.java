@@ -335,14 +335,14 @@ public class GUIDriver extends Application {
     /**
      * @param newValue new total memory value
      */
-    public void setTotalMemoryValue(Double newValue) {
+    public void setTotalMemoryValue(long newValue) {
         this.totalMemoryValueLabel.setText(newValue + "");
     }
 
     /**
      * @param newValue new memory used value
      */
-    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
+    public void setMemoryUsedValue(long newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
 
     /** setMemoryAvailableValue
      *
@@ -383,6 +383,9 @@ public class GUIDriver extends Application {
         this.cpuUsageSeries.getData().add(new XYChart.Data(x, y));
         this.cpuXAxis.setLowerBound(this.cpuUsages.get(0)[0]);
         this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
+
+        if (this.cpuUsages.size() > 5)
+            this.cpuUsages.remove(0);
     }
 
     /**
@@ -397,5 +400,8 @@ public class GUIDriver extends Application {
         this.memoryUsageSeries.getData().add(new XYChart.Data(x, y));
         this.memoryXAxis.setLowerBound(this.memoryUsages.get(0)[0]);
         this.memoryXAxis.setUpperBound(this.memoryUsages.get(this.memoryUsages.size() - 1)[0]);
+
+        if (this.memoryUsages.size() > 5)
+            this.memoryUsages.remove(0);
     }
 }
