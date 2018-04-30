@@ -1,5 +1,8 @@
 package com.marist.jrm.application;
 
+import com.marist.jrm.client.GUIDriver;
+import java.util.logging.Level;
+
 import java.sql.*;
 
 
@@ -92,7 +95,7 @@ public class SQLiteDBInit {
             stmt.close();
             c.close();
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            GUIDriver.LOGGER.log(Level.SEVERE, e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
 
