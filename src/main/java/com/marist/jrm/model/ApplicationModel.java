@@ -1,8 +1,11 @@
 package com.marist.jrm.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to model the necessary data for an Application
+ * @author Marcos Barbieri
+ */
 public class ApplicationModel {
 
     private String name;

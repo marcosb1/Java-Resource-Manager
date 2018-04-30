@@ -7,9 +7,10 @@ import java.sql.*;
 import java.util.logging.Level;
 
 /**
- * Created by Dominic Rossillo on 4/14/2018.
+ * class consisting of utility functions to allow for the insertion of records into the database
+ * @author Dominic Rossillo
+ * @since 4/14/2018
  */
-//class consisting of utility functions to allow for the insertion of records into the database
 public class SQLiteDBUtil {
     private static String url = "jdbc:sqlite:src/resources/jrmDB.db";
     //function used to insert a Thread into the thread table taking in the Process ID of the parent process and the memory being utilized by the thread

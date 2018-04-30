@@ -2,6 +2,8 @@ package com.marist.jrm.model;
 
 /**
  * Simple class to hold memory usage metrics
+ * @author Rob Catalano
+ * @copyright 2018
  */
 public class MemoryMetrics {
 

@@ -1,10 +1,13 @@
 package com.marist.jrm.model;
 
-
 import oshi.software.os.OSProcess;
 
 import java.util.ArrayList;
 
+/**
+ * Class to model the necessary data for an Application
+ * @author Marcos Barbieri
+ */
 public class ProcessModel {
 
     private String processName;

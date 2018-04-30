@@ -6,15 +6,18 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.*;
 
+/**
+ * @author Marcos Barbieri
+ */
 public class ConfirmBox {
 
     public static boolean isConfirmed;
 
     /**
-     *
-     * @param title
-     * @param msg
-     * @return
+     * Will create a pop up confirm window box, that will require user input
+     * @param title title of window box that will appear
+     * @param msg message that will be written to window box
+     * @return true if window box was confirmed, false if not
      */
     public static boolean display(String title, String msg) {
         Stage confirm = new Stage();

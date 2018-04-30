@@ -4,14 +4,11 @@ import java.lang.management.*;
 
 import com.marist.jrm.model.ApplicationModel;
 import com.marist.jrm.model.MemoryMetrics;
-import com.sun.jna.Memory;
-import oshi.SystemInfo;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
-import oshi.util.FormatUtil;
 
 import com.marist.jrm.model.ProcessModel;
 
@@ -19,8 +16,8 @@ import java.util.*;
 
 /**
  * Class to perform all system call utility functions using the OSHI library
- * @Author Rob Catalano
- * @Copyright 2018
+ * @author Rob Catalano
+ * @copyright 2018
  */
 public class SystemCallDriver {
 

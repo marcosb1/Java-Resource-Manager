@@ -7,7 +7,8 @@ import java.sql.*;
 
 
 /**
- * Created by Dominic Rossillo on 3/25/2018.
+ * @author Dominic Rossillo
+ * @since 3/25/2018.
  */
 //class used to  handle the creation of database tables
 public class SQLiteDBInit {
