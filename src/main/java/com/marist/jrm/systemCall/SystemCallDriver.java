@@ -95,9 +95,10 @@ public class SystemCallDriver {
    * @param hal
    * @return
    */
-  public static double getCPUUsage(HardwareAbstractionLayer hal) {
+  public static long[] getCPUUsage(HardwareAbstractionLayer hal) {
+    long time = System.currentTimeMillis();
     double cpuUsage = hal.getProcessor().getSystemCpuLoadBetweenTicks() * 100;
-    return cpuUsage;
+    return new long[]{time,(long)cpuUsage};
   }
 
   /**

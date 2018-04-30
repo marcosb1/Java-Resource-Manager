@@ -280,7 +280,7 @@ public class GUIDriver extends Application {
         this.setNumProcessesValue(os.getProcessCount());
         this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
-        //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
+        this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.hal));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
         // Application TODO
