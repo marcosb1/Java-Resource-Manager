@@ -51,6 +51,7 @@ public class GUIDriver extends Application {
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
     private final int REFRESH_INTERVAL = 1000;
+    private final int BYTES_TO_GB = 1073741824;
 
     private Stage applicationWindow;
     private BorderPane layout;
@@ -203,7 +204,7 @@ public class GUIDriver extends Application {
         this.memoryXAxis.setTickUnit(200000);
 
         this.memoryYAxis.setLowerBound(0);
-        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / 1073741824);
+        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / this.BYTES_TO_GB);
         this.memoryYAxis.setAutoRanging(false);
         this.memoryYAxis.setTickUnit(4);
 
@@ -327,6 +328,7 @@ public class GUIDriver extends Application {
 
                 List<ProcessModel> appProcesses = app.getProcesses();
                 for (ProcessModel proc : appProcesses) {
+                    this.setProcessTableContents(proc);
                     double procMem = Double.parseDouble(proc.getMemory());
                     ArrayList<Integer> procThreads = proc.getThreadUsages();
                     String procDesc = proc.getDescription();
@@ -362,15 +364,6 @@ public class GUIDriver extends Application {
             e.printStackTrace();
         }
 
-
-            // ADD TO DB HERE
-            for (ProcessModel p: appProcesses) {
-                this.setProcessTableContents(p);
-            }
-
-
-
-
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
     }
@@ -405,14 +398,14 @@ public class GUIDriver extends Application {
     /**
      * @param newValue new total memory value
      */
-    public void setTotalMemoryValue(Double newValue) {
+    public void setTotalMemoryValue(long newValue) {
         this.totalMemoryValueLabel.setText(newValue + "");
     }
 
     /**
      * @param newValue new memory used value
      */
-    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
+    public void setMemoryUsedValue(long newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
 
     /** setMemoryAvailableValue
      *
@@ -453,6 +446,9 @@ public class GUIDriver extends Application {
         this.cpuUsageSeries.getData().add(new XYChart.Data(x, y));
         this.cpuXAxis.setLowerBound(this.cpuUsages.get(0)[0]);
         this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
+
+        if (this.cpuUsages.size() > 5)
+            this.cpuUsages.remove(0);
     }
 
     /**
@@ -467,5 +463,8 @@ public class GUIDriver extends Application {
         this.memoryUsageSeries.getData().add(new XYChart.Data(x, y));
         this.memoryXAxis.setLowerBound(this.memoryUsages.get(0)[0]);
         this.memoryXAxis.setUpperBound(this.memoryUsages.get(this.memoryUsages.size() - 1)[0]);
+
+        if (this.memoryUsages.size() > 5)
+            this.memoryUsages.remove(0);
     }
 }
