@@ -1,11 +1,3 @@
-/**
- * The GUIDriver will be the class that is run when the application is run. The GUIDriver contains all the tie-ins from
- * the other classes in this project.
- *
- * @author Marcos Barbieri
- * @version 0.0.5
- */
-
 package com.marist.jrm.client;
 
 import com.marist.jrm.application.SQLiteDBInit;
@@ -43,6 +35,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The GUIDriver will be the class that is run when the application is run. The GUIDriver contains all the tie-ins from
+ * the other classes in this project.
+ *
+ * @author Marcos Barbieri
+ * @version 0.0.5
+ */
 public class GUIDriver extends Application {
 
     public final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());

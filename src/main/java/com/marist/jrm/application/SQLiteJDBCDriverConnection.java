@@ -1,6 +1,5 @@
 package com.marist.jrm.application;
 
-
 import com.marist.jrm.client.GUIDriver;
 import org.sqlite.SQLiteConfig;
 
@@ -9,8 +8,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-
-//this class is a generic JDBC driver connection class
+/**
+ * this class is a generic JDBC driver connection class
+ * @author Dominic Rossillo
+ */
 public class SQLiteJDBCDriverConnection {
     /**
      * Connect to database
