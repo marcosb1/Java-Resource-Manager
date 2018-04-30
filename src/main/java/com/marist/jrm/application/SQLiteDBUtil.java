@@ -64,10 +64,10 @@ public class SQLiteDBUtil {
 
     //function used to insert a Application into the Application table taking in the Applications name, the applications description , and the  System ID of the parent System
     //returns an Integer representing the id of the Application created
-    public static int insertApplication(String appName, String appDescription, int appSysID) throws SQLException {
+    public static int insertApplication(String appName, String appStatus, int appSysID) throws SQLException {
 
         //Create sql string to insert into the table
-        String sql = "INSERT INTO APPLICATION(appName,appDescription,appSysID) VALUES(?,?,?)";
+        String sql = "INSERT INTO APPLICATION(appName,appStatus,appSysID) VALUES(?,?,?)";
 
         try {
             //Create Sql Config object
@@ -84,7 +84,7 @@ public class SQLiteDBUtil {
 
             //set the values of the ? values in the sql statement
             sqlStatement.setString(1, appName);
-            sqlStatement.setString(2, appDescription);
+            sqlStatement.setString(2, appStatus);
             sqlStatement.setInt(3, appSysID);
 
             //execute insert
@@ -95,6 +95,7 @@ public class SQLiteDBUtil {
 
             //execute query
             ResultSet rs = conn.createStatement().executeQuery(sql);
+
             rs.next();
 
             //return the id of the Application created
@@ -104,6 +105,7 @@ public class SQLiteDBUtil {
             if (e.getMessage().contains("SQLITE_CONSTRAINT_FOREIGNKEY")) {
                 System.out.println("Attempt to add null System reference stopped!");
             } else {
+
                 System.out.println(e.getMessage());
             }
             throw e;
@@ -113,7 +115,7 @@ public class SQLiteDBUtil {
 
     //function used to insert a Process into the Process table taking in the Application ID of the parent Application, the memory the process is utilizing, and the number of threads the process contains
     //returns an Integer representing the id of the Process created
-    public static int insertProcess(int procAppId, int procMemory, int procThreadCount) throws SQLException {
+    public static int insertProcess(int procAppId, double procMemory, int procThreadCount, String procDesc, String procState) throws SQLException {
 
 
         try {
@@ -127,15 +129,17 @@ public class SQLiteDBUtil {
             Connection conn = DriverManager.getConnection(url, config.toProperties());
 
             //Create sql string to insert into the table
-            String sql = "INSERT INTO PROCESS(procAppId,procMemory,procThreadCount) VALUES(?,?,?)";
+            String sql = "INSERT INTO PROCESS(procAppId,procMemory,procThreadCount,procDesc,procState) VALUES(?,?,?,?,?)";
 
             //create a prepared statement using the sql insert string
             PreparedStatement sqlStatement = conn.prepareStatement(sql);
 
             //set the values of the ? values in the sql statement
             sqlStatement.setInt(1, procAppId);
-            sqlStatement.setInt(2, procMemory);
+            sqlStatement.setDouble(2, procMemory);
             sqlStatement.setInt(3, procThreadCount);
+            sqlStatement.setString(4, procDesc);
+            sqlStatement.setString(5, procState);
 
             //execute insert
             sqlStatement.executeUpdate();
@@ -164,7 +168,7 @@ public class SQLiteDBUtil {
 
     //function used to insert a System into the System table taking in the current system time, syscpuusage, the system uptime, total physical memory, free memory, total number of threads and processes
     //returns an Integer representing the id of the System state created
-    public static int insertSystem(int sysTime, int sysCPUUsage, int sysUpTime, int sysPhysicalMemory, int sysFreeMemory, int sysTotalThreads, int sysTotalProcesses) throws SQLException {
+    public static int insertSystem(double sysTime, double sysCPUUsage, double sysUpTime, double sysPhysicalMemory, double sysFreeMemory, int sysTotalThreads, int sysTotalProcesses) throws SQLException {
 
         try {
             //Create Sql Config object
@@ -183,11 +187,12 @@ public class SQLiteDBUtil {
             PreparedStatement sqlStatement = conn.prepareStatement(sql);
 
             //set the values of the ? values in the sql statement
-            sqlStatement.setInt(1, sysTime);
-            sqlStatement.setInt(2, sysCPUUsage);
-            sqlStatement.setInt(3, sysUpTime);
-            sqlStatement.setInt(4, sysPhysicalMemory);
-            sqlStatement.setInt(5, sysFreeMemory);
+
+            sqlStatement.setDouble(1, sysTime);
+            sqlStatement.setDouble(2, sysCPUUsage);
+            sqlStatement.setDouble(3, sysUpTime);
+            sqlStatement.setDouble(4, sysPhysicalMemory);
+            sqlStatement.setDouble(5, sysFreeMemory);
             sqlStatement.setInt(6, sysTotalThreads);
             sqlStatement.setInt(7, sysTotalProcesses);
 
