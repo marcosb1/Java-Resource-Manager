@@ -109,10 +109,6 @@ public class GUIDriver extends Application {
         /* File Menu initialization and items */
         Menu fileMenu = new Menu("File");
 
-        MenuItem export = new MenuItem("Export...");
-        export.setDisable(false);
-        fileMenu.getItems().add(export);
-
         fileMenu.getItems().add(new SeparatorMenuItem());
 
         MenuItem close = new MenuItem("Close");
