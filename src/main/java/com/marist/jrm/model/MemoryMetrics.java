@@ -1,37 +1,40 @@
 package com.marist.jrm.model;
 
+/**
+ * Simple class to hold memory usage metrics
+ */
 public class MemoryMetrics {
 
-  Double totalMemory;
-  Double memoryUsed;
-  Double memoryAvailable;
+  long totalMemory;
+  long memoryUsed;
+  long memoryAvailable;
 
-  public MemoryMetrics(Double totalMemory, Double memoryUsed, Double memoryAvailble) {
+  public MemoryMetrics(long totalMemory, long memoryUsed, long memoryAvailble) {
     this.totalMemory = totalMemory;
     this.memoryUsed = memoryUsed;
     this.memoryAvailable = memoryAvailble;
   }
 
-  public Double getTotalMemory() {
+  public long getTotalMemory() {
     return totalMemory;
   }
 
-  public void setTotalMemory(Double totalMemory) {
+  public void setTotalMemory(long totalMemory) {
     this.totalMemory = totalMemory;
   }
 
-  public Double getMemoryUsed() {
+  public long getMemoryUsed() {
     return memoryUsed;
   }
 
-  public void setMemoryUsed(Double memoryUsed) {
+  public void setMemoryUsed(long memoryUsed) {
     this.memoryUsed = memoryUsed;
   }
-  public Double getMemoryAvailable() {
+  public long getMemoryAvailable() {
     return memoryAvailable;
   }
 
-  public void setMemoryAvailable(Double memoryAvailable) {
+  public void setMemoryAvailable(long memoryAvailable) {
     this.memoryAvailable = memoryAvailable;
   }
 }
