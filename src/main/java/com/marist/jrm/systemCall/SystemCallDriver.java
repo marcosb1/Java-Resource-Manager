@@ -27,13 +27,15 @@ public class SystemCallDriver {
     OperatingSystem os = si.getOperatingSystem();
 
     printBasicInfo(hal.getComputerSystem());
-    List<ProcessModel> procs = getProcesses(os, hal.getMemory());
+    //List<ProcessModel> procs = getProcesses(os, hal.getMemory());
 
-    List<ApplicationModel> apps = getApplications(procs);
+    //List<ApplicationModel> apps = getApplications(procs);
 
-
+    getCPUUsage(hal);
 
   }
+
+
 
   /**
    * Method to calculate the memory usage per individual thread.
@@ -86,6 +88,16 @@ public class SystemCallDriver {
 
  // threadCPUUsage contains cpu % per thread
     System.out.println(threadCPUUsage);
+  }
+
+  /**
+   * method to return the percentage of CPU usage
+   * @param hal
+   * @return
+   */
+  public static double getCPUUsage(HardwareAbstractionLayer hal) {
+    double cpuUsage = hal.getProcessor().getSystemCpuLoadBetweenTicks() * 100;
+    return cpuUsage;
   }
 
   /**
