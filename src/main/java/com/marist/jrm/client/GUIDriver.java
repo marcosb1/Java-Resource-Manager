@@ -1,3 +1,11 @@
+/**
+ * The GUIDriver will be the class that is run when the application is run. The GUIDriver contains all the tie-ins from
+ * the other classes in this project.
+ *
+ * @author Marcos Barbieri
+ * @version 0.0.5
+ */
+
 package com.marist.jrm.client;
 
 import com.marist.jrm.application.SQLiteDBInit;
@@ -37,7 +45,8 @@ import java.util.logging.Logger;
 
 public class GUIDriver extends Application {
 
-    public TableView<ProcessModel> processTable;
+    private TableView<ApplicationModel> applicationsTable;
+    private TableView<ProcessModel> processTable;
 
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
@@ -77,7 +86,7 @@ public class GUIDriver extends Application {
     /**
      * Launches and initializes window/application with all widgets/components
      * @param primaryStage where the widget(s) and scene(s) are going to displayed
-     * @throws Exception
+     * @throws Exception the application will throw a generic JavaFX error
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -127,15 +136,15 @@ public class GUIDriver extends Application {
         applicationsTab.setClosable(false);
         applicationsTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
-        TableColumn<Application, String> applicationNameCol = new TableColumn<>("Name");
+        TableColumn<ApplicationModel, String> applicationNameCol = new TableColumn<>("Name");
         applicationNameCol.setMinWidth(300);
         applicationNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<Application, String> applicationStatusCol = new TableColumn<>("Status");
+        TableColumn<ApplicationModel, String> applicationStatusCol = new TableColumn<>("Status");
         applicationStatusCol.setMinWidth(300);
         applicationStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        TableView<Application> applicationsTable = new TableView<>();
+        applicationsTable = new TableView<>();
         applicationsTable.getColumns().addAll(applicationNameCol, applicationStatusCol);
         applicationsTab.setContent(applicationsTable);
         tabPane.getTabs().add(applicationsTab);
@@ -269,11 +278,9 @@ public class GUIDriver extends Application {
      * NOTE: PLEASE PUT ALL METHODS REGARDING UI UPDATING IN HERE
      */
     public void update() {
-        // update process table elements
-        List<ProcessModel> processes = SystemCallDriver.getProcesses(this.os, this.hal.getMemory());
+        this.applicationsTable.getItems().clear();
         this.processTable.getItems().clear();
-        this.setProcessTableContents(processes);
-        // System Call TODO
+
         MemoryMetrics memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
         this.setTotalMemoryValue(memoryValues.getTotalMemory());
         this.setMemoryUsedValue(memoryValues.getMemoryUsed());
@@ -282,9 +289,13 @@ public class GUIDriver extends Application {
         this.setNumProcessesValue(os.getProcessCount());
         this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
-        //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
+        this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.hal));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
+        List<ApplicationModel> applications = SystemCallDriver
+                .getApplications(SystemCallDriver
+                        .getProcesses(this.os, this.hal.getMemory()));
+        // TODO: From there nest Process list in Application model insert into db
 
 
 
@@ -302,9 +313,11 @@ public class GUIDriver extends Application {
         int sysNumProc=os.getProcessCount();
         try {
             int curSysId = SQLiteDBUtil.insertSystem(sysTime, sysUpTime, sysCpuUsage, sysTotalMem, sysFreemem, sysNumThreads, sysNumProc);
-            List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
+           // List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
             // TODO: From there nest Process list in Application model insert into db
             for (ApplicationModel app : applications) {
+                // update the table on the GUI and database at once to avoid creating two separate for-loops
+                this.setApplicationTableContents(app);
                 String appName = app.getName();
                 String appStatus = app.getStatus();
 
@@ -322,7 +335,7 @@ public class GUIDriver extends Application {
                     int procId = SQLiteDBUtil.insertProcess(appID, procMem,threadCount , procDesc, procStatus);
                     //loop each thread to insert them and set mem usage to the procmem/n
                     for (int i = 0; i< threadCount;i++) {
-                        
+
                         int curThreadUsage;
                         if(procMem%threadCount!=0){
                             if(i==0){
@@ -351,6 +364,10 @@ public class GUIDriver extends Application {
 
 
             // ADD TO DB HERE
+            for (ProcessModel p: appProcesses) {
+                this.setProcessTableContents(p);
+            }
+
 
 
 
@@ -375,10 +392,13 @@ public class GUIDriver extends Application {
     /**
      * @param active List containing the active processes to be placed in the table
      */
-    public void setProcessTableContents(List<ProcessModel> active) {
-        // Add processes to the table
-        for (ProcessModel p : active) {
-            this.processTable.getItems().add(p);
+    public void setProcessTableContents(ProcessModel active) {
+        this.processTable.getItems().add(active);
+    }
+
+    public void setApplicationTableContents(ApplicationModel active) {
+        if (!this.applicationsTable.getItems().contains(active)) {
+            this.applicationsTable.getItems().add(active);
         }
     }
 
