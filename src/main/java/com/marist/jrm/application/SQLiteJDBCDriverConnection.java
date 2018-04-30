@@ -1,26 +1,30 @@
 package com.marist.jrm.application;
 
 
+import org.sqlite.SQLiteConfig;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * @author sqlitetutorial.net
- */
+
 //this class is a generic JDBC driver connection class
 public class SQLiteJDBCDriverConnection {
     /**
      * Connect to database
      */
-    public static Connection connect() {
-        Connection conn = null;
+    Connection conn = null;
+    public Connection connect() {
+
         try {
             // db parameters
             //set the url connectino to the jrmDB file
             String url = "jdbc:sqlite:src/resources/jrmDB.db";
+            SQLiteConfig config = new SQLiteConfig();
+            //set enforce foreign keys to true for the config
+            config.enforceForeignKeys(true);
             // create a connection to the database
-            conn = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            conn = DriverManager.getConnection(url,config.toProperties());
             //if (conn == null){
             //System.out.println("conn failed");
             //}
@@ -39,8 +43,5 @@ public class SQLiteJDBCDriverConnection {
         }
         return conn;
     }
-    /**
-     * @param args the command line arguments
-     */
 
 }

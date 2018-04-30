@@ -10,7 +10,9 @@ import java.sql.*;
 public class SQLiteDBInit {
 
     //function that performs the creation of the database tables given pre written queries
+
     public static void initDB() {
+        String url = "jdbc:sqlite:src/resources/jrmDB.db";
         //initialize  variables used during querying of database
         //Connection variable used to connect to the database
         Connection c = null;
@@ -20,7 +22,7 @@ public class SQLiteDBInit {
             //dynamically load sqlite JDBC driver
             Class.forName("org.sqlite.JDBC");
             //setting connection variable to the java-resource-manage db file in src/resources
-            c = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            c = DriverManager.getConnection(url);
             // System.out.println("Opened database successfully");
 
             //initialize statement using the JDBC Driver connection

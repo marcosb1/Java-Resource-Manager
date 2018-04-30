@@ -3,7 +3,7 @@
 .DS_Store
 .idea/
 *.iml
-test.DB
+*.DB
 
 # COMPILED CODE
 target/
