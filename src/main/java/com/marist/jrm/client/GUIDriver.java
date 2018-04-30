@@ -1,6 +1,18 @@
+/**
+ * The GUIDriver will be the class that is run when the application is run. The GUIDriver contains all the tie-ins from
+ * the other classes in this project.
+ *
+ * @author Marcos Barbieri
+ * @version 0.0.5
+ */
+
 package com.marist.jrm.client;
 
+import com.marist.jrm.application.SQLiteDBInit;
+import com.marist.jrm.application.SQLiteDBUtil;
 import com.marist.jrm.client.components.ConfirmBox;
+import com.marist.jrm.model.ApplicationModel;
+import com.marist.jrm.model.MemoryMetrics;
 import com.marist.jrm.model.ProcessModel;
 import com.marist.jrm.systemCall.SystemCallDriver;
 import javafx.animation.Animation;
@@ -19,20 +31,22 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-
 import javafx.util.Duration;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUIDriver extends Application {
 
-    public TableView<ProcessModel> processTable;
+    private TableView<ApplicationModel> applicationsTable;
+    private TableView<ProcessModel> processTable;
 
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
@@ -72,13 +86,17 @@ public class GUIDriver extends Application {
     /**
      * Launches and initializes window/application with all widgets/components
      * @param primaryStage where the widget(s) and scene(s) are going to displayed
-     * @throws Exception
+     * @throws Exception the application will throw a generic JavaFX error
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
         // we should make the application window
         // global to the class, it might make
         // passing variables from scenes easier
+
+        //Start initializing the database tables
+        SQLiteDBInit.initDB();
+
         this.applicationWindow = primaryStage;
         this.applicationWindow.setTitle("Java Resource Manager");
         this.applicationWindow.setOnCloseRequest(e -> {
@@ -118,15 +136,15 @@ public class GUIDriver extends Application {
         applicationsTab.setClosable(false);
         applicationsTab.setContent(new Rectangle(600, 700, Color.LIGHTGREY));
 
-        TableColumn<Application, String> applicationNameCol = new TableColumn<>("Name");
+        TableColumn<ApplicationModel, String> applicationNameCol = new TableColumn<>("Name");
         applicationNameCol.setMinWidth(300);
         applicationNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<Application, String> applicationStatusCol = new TableColumn<>("Status");
+        TableColumn<ApplicationModel, String> applicationStatusCol = new TableColumn<>("Status");
         applicationStatusCol.setMinWidth(300);
         applicationStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        TableView<Application> applicationsTable = new TableView<>();
+        applicationsTable = new TableView<>();
         applicationsTable.getColumns().addAll(applicationNameCol, applicationStatusCol);
         applicationsTab.setContent(applicationsTable);
         tabPane.getTabs().add(applicationsTab);
@@ -150,7 +168,7 @@ public class GUIDriver extends Application {
 
         processTable = new TableView<>();
         processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol);
-      
+
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
@@ -185,7 +203,7 @@ public class GUIDriver extends Application {
         this.memoryXAxis.setTickUnit(200000);
 
         this.memoryYAxis.setLowerBound(0);
-        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / 1073741824);
+        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / SystemCallDriver.BYTES_PER_GIG);
         this.memoryYAxis.setAutoRanging(false);
         this.memoryYAxis.setTickUnit(4);
 
@@ -260,30 +278,87 @@ public class GUIDriver extends Application {
      * NOTE: PLEASE PUT ALL METHODS REGARDING UI UPDATING IN HERE
      */
     public void update() {
-        // update process table elements
+        this.applicationsTable.getItems().clear();
         this.processTable.getItems().clear();
-        this.setProcessTableContents(SystemCallDriver.getProcesses(this.os, this.hal.getMemory()));
-        // System Call TODO
-        Double[] memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
-        this.setTotalMemoryValue(memoryValues[0]);
-        this.setMemoryUsedValue(memoryValues[1]);
-        this.setMemoryAvailableValue(memoryValues[2]);
+
+        MemoryMetrics memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
+        this.setTotalMemoryValue(memoryValues.getTotalMemory());
+        this.setMemoryUsedValue(memoryValues.getMemoryUsed());
+        this.setMemoryAvailableValue(memoryValues.getMemoryAvailable());
         this.setNumThreadsValue(os.getThreadCount());
         this.setNumProcessesValue(os.getProcessCount());
         this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
         // get clock ticks and put it in array [clockTickValue,cpuUsageVal] and [clockTickVal, memUsage]
-        //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
+        this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.hal));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
-        // Application TODO
-        // TODO: List of applications for application package
-        // TODO: From there nest Process list in Application model insert into db
-        // TODO: Get num threads for that + usages
+        List<ApplicationModel> applications = SystemCallDriver
+                .getApplications(SystemCallDriver
+                        .getProcesses(this.os, this.hal.getMemory()));
+
+        //function used to insert a System into the System table taking in the current system time, syscpuusage, the system uptime, total physical memory, free memory, total number of threads and processes
+        double sysTime=0;
+        double sysUpTime=0;
+        double sysCpuUsage=0;
+        double sysTotalMem=memoryValues.getTotalMemory();
+        double sysFreemem=memoryValues.getMemoryAvailable();
+        int sysNumThreads= os.getThreadCount();
+        int sysNumProc=os.getProcessCount();
+        try {
+            int curSysId = SQLiteDBUtil.insertSystem(sysTime, sysUpTime, sysCpuUsage, sysTotalMem, sysFreemem, sysNumThreads, sysNumProc);
+
+            for (ApplicationModel app : applications) {
+                // update the table on the GUI and database at once to avoid creating two separate for-loops
+                this.setApplicationTableContents(app);
+                String appName = app.getName();
+                String appStatus = app.getStatus();
+
+
+                //function used to insert a Application into the Application table taking in the Applications name, the applications description , and the  System ID of the parent System
+                int appID = SQLiteDBUtil.insertApplication(appName, appStatus, curSysId);
+
+                List<ProcessModel> appProcesses = app.getProcesses();
+                for (ProcessModel proc : appProcesses) {
+                    this.setProcessTableContents(proc);
+                    double procMem = Double.parseDouble(proc.getMemory());
+                    ArrayList<Integer> procThreads = proc.getThreadUsages();
+                    String procDesc = proc.getDescription();
+                    int threadCount = Integer.parseInt(proc.getThreadCount());
+                    String procStatus = proc.getState().toString();
+                    int procId = SQLiteDBUtil.insertProcess(appID, procMem,threadCount , procDesc, procStatus);
+                    //loop each thread to insert them and set mem usage to the procmem/n
+                    for (int i = 0; i< threadCount;i++) {
+
+                        int curThreadUsage;
+                        if (procMem % threadCount != 0){
+                            if (i==0){
+                                curThreadUsage= (int) ((threadCount/threadCount)+procMem%threadCount);
+                            }
+                            else{
+                                curThreadUsage= (int)threadCount/threadCount;
+                            }
+
+                        }
+                        else{
+                            curThreadUsage = (int) (procMem/threadCount);
+                        }
+
+                        SQLiteDBUtil.insertThread(procId,curThreadUsage);
+                    }
+
+                }
+
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
     }
-  
+
     /**
      * Will commit any left over transactions after prompting the user as to
      * whether they are sure they want to exit the program.
@@ -301,24 +376,27 @@ public class GUIDriver extends Application {
     /**
      * @param active List containing the active processes to be placed in the table
      */
-    public void setProcessTableContents(ArrayList<ProcessModel> active) {
-        // Add processes to the table
-        for (ProcessModel p : active) {
-            this.processTable.getItems().add(p);
+    public void setProcessTableContents(ProcessModel active) {
+        this.processTable.getItems().add(active);
+    }
+
+    public void setApplicationTableContents(ApplicationModel active) {
+        if (!this.applicationsTable.getItems().contains(active)) {
+            this.applicationsTable.getItems().add(active);
         }
     }
 
     /**
      * @param newValue new total memory value
      */
-    public void setTotalMemoryValue(Double newValue) {
+    public void setTotalMemoryValue(long newValue) {
         this.totalMemoryValueLabel.setText(newValue + "");
     }
 
     /**
      * @param newValue new memory used value
      */
-    public void setMemoryUsedValue(Double newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
+    public void setMemoryUsedValue(long newValue) { this.memoryUsedValueLabel.setText(newValue + ""); }
 
     /** setMemoryAvailableValue
      *
@@ -359,6 +437,9 @@ public class GUIDriver extends Application {
         this.cpuUsageSeries.getData().add(new XYChart.Data(x, y));
         this.cpuXAxis.setLowerBound(this.cpuUsages.get(0)[0]);
         this.cpuXAxis.setUpperBound(this.cpuUsages.get(this.cpuUsages.size() - 1)[0]);
+
+        if (this.cpuUsages.size() > 5)
+            this.cpuUsages.remove(0);
     }
 
     /**
@@ -373,5 +454,8 @@ public class GUIDriver extends Application {
         this.memoryUsageSeries.getData().add(new XYChart.Data(x, y));
         this.memoryXAxis.setLowerBound(this.memoryUsages.get(0)[0]);
         this.memoryXAxis.setUpperBound(this.memoryUsages.get(this.memoryUsages.size() - 1)[0]);
+
+        if (this.memoryUsages.size() > 5)
+            this.memoryUsages.remove(0);
     }
 }

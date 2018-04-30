@@ -2,6 +2,9 @@ package com.marist.jrm.systemCall;
 
 import java.lang.management.*;
 
+import com.marist.jrm.model.ApplicationModel;
+import com.marist.jrm.model.MemoryMetrics;
+import com.sun.jna.Memory;
 import oshi.SystemInfo;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.GlobalMemory;
@@ -14,22 +17,14 @@ import com.marist.jrm.model.ProcessModel;
 
 import java.util.*;
 
+/**
+ * Class to perform all system call utility functions using the OSHI library
+ * @Author Rob Catalano
+ * @Copyright 2018
+ */
 public class SystemCallDriver {
 
-  public static void main(String[] args) {
-
-    SystemInfo si = new oshi.SystemInfo();
-
-    HardwareAbstractionLayer hal = si.getHardware();
-    OperatingSystem os = si.getOperatingSystem();
-
-    printBasicInfo(hal.getComputerSystem());
-    getProcesses(os, hal.getMemory());
-
-    calcMemoryUsagePerThread();
-
-
-  }
+  public static final long BYTES_PER_GIG = 1073741824;
 
   /**
    * Method to calculate the memory usage per individual thread.
@@ -40,7 +35,7 @@ public class SystemCallDriver {
    * This method will output data that will eventually be put on a graph
    * that and will be easy to read.
    */
-  private static void calcMemoryUsagePerThread() {
+  private static void calcCPUUsagePerThread() {
     int sampleTime = 10000;
     ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
     RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
@@ -85,40 +80,70 @@ public class SystemCallDriver {
   }
 
   /**
+   * method to return the percentage of CPU usage
+   * @param hal
+   * @return long[systemTime,percentageCPUUsage]
+   */
+  public static long[] getCPUUsage(HardwareAbstractionLayer hal) {
+    long time = System.currentTimeMillis();
+    double cpuUsage = hal.getProcessor().getSystemCpuLoadBetweenTicks() * 100;
+    return new long[]{time,(long)cpuUsage};
+  }
+
+  /**
    * Method to obtain all processes currently running on the machine.
    * For each process running, a ProcessModel object is constructed and added
-   * to the return ArrayList. Also, metrics regarding the top 5 cpu-usage-heavy
+   * to the return List. Also, metrics regarding the top 5 cpu-usage-heavy
    * processes are printed out.
    * @param os OperatingSystem
    * @param memory GlobalMemory
    * @return ArrayList of ProcessModel objects
    */
-  public static ArrayList<ProcessModel> getProcesses(OperatingSystem os, GlobalMemory memory) {
-    System.out.println("Processes: " + os.getProcessCount() + ", Threads: " + os.getThreadCount());
+  public static List<ProcessModel> getProcesses(OperatingSystem os, GlobalMemory memory) {
     // Sort by highest CPU
     // To only gather x amount of processes, change
     // the first parameter of os.getProcesses from 0 to x.
     List<OSProcess> OSprocs = Arrays.asList(os.getProcesses(0, OperatingSystem.ProcessSort.CPU));
-    ArrayList<ProcessModel> procs = new ArrayList<>();
+    List<ProcessModel> procs = new ArrayList<>();
 
-    System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
     for (int i = 0; i < OSprocs.size() && i < 50; i++) {
       OSProcess p = OSprocs.get(i);
 
       OSProcess.State state = p.getState();
       ProcessModel process = new ProcessModel(p.getName(),String.valueOf(100d * p.getResidentSetSize() / memory.getTotal()),String.valueOf(p.getThreadCount()),"desc",state,new ArrayList<Integer>());
       procs.add(process);
-      System.out.format(" %5d %5.1f %4.1f %9s %9s %s%n", p.getProcessID(),
-        100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime(),
-        100d * p.getResidentSetSize() / memory.getTotal(), FormatUtil.formatBytes(p.getVirtualSize()),
-        FormatUtil.formatBytes(p.getResidentSetSize()), p.getName());
     }
 
     return procs;
   }
 
-  // TODO: create buildApplication functions which will take in a ArrayList<Process>
-
+  /**
+   * Method that creates a list of ApplicationModel objects from all of the current processes
+   *
+   * @param allProcesses
+   * @return
+   */
+  public static List<ApplicationModel> getApplications(List<ProcessModel> allProcesses) {
+    List<String> uniqueProcesses = new ArrayList<>();
+    List<ApplicationModel> allApplications = new ArrayList<>();
+    for (ProcessModel p: allProcesses) {
+      String appName = p.getProcessName().replaceAll(".exe","");
+      if (!uniqueProcesses.contains(appName)) {
+        uniqueProcesses.add(appName);
+      }
+    }
+    for (String appName: uniqueProcesses) {
+      List<ProcessModel> appProcesses = new ArrayList<>();
+      for (ProcessModel p: allProcesses) {
+        if (p.getProcessName().contains(appName)) {
+          appProcesses.add(p);
+        }
+      }
+      ApplicationModel app = new ApplicationModel(appName,"Running",appProcesses);
+      allApplications.add(app);
+    }
+    return allApplications;
+  }
 
   /**
    * Simple method to print some basic info regarding the system.
@@ -137,30 +162,15 @@ public class SystemCallDriver {
    * @param memory
    * @return
    */
-  public static Double[] getMemoryMetrics(GlobalMemory memory) {
-    Double[] memoryUsageVals = new Double[3];
+  public static MemoryMetrics getMemoryMetrics(GlobalMemory memory) {
 
-    String memAvailString = FormatUtil.formatBytes(memory.getAvailable());
-    memAvailString = memAvailString.substring(0,memAvailString.length()-3);
+    long memAvail = memory.getAvailable() / BYTES_PER_GIG;
+    long memTotal = memory.getTotal() / BYTES_PER_GIG;
+    long memUsed = memTotal - memAvail;
 
-    String memTotalString = FormatUtil.formatBytes(memory.getTotal());
-    memTotalString = memTotalString.substring(0,memTotalString.length()-3);
+    MemoryMetrics memoryUsageMetrics = new MemoryMetrics(memTotal,memUsed,memAvail);
 
-    Double memAvail = Double.parseDouble(memAvailString);
-    Double memTotal = Double.parseDouble(memTotalString);
-    Double memUsed = memTotal - memAvail;
-
-    System.out.println("Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + "/"
-      + FormatUtil.formatBytes(memory.getTotal()));
-    System.out.println("Available bytes: " + FormatUtil.formatBytes(memory.getSwapUsed()) + "/"
-      + FormatUtil.formatBytes(memory.getSwapTotal()));
-    System.out.println("Mem used: " + memUsed);
-
-    memoryUsageVals[0] = memTotal;
-    memoryUsageVals[1] = memUsed;
-    memoryUsageVals[2] = memAvail;
-
-    return memoryUsageVals;
+    return memoryUsageMetrics;
   }
 
   /**
@@ -170,7 +180,7 @@ public class SystemCallDriver {
    */
   public static long[] getMemoryUsage(GlobalMemory memory) {
     long time = System.currentTimeMillis();
-    long memUsed = (memory.getTotal() - memory.getAvailable()) / 1073741824;
+    long memUsed = (memory.getTotal() - memory.getAvailable()) / BYTES_PER_GIG;
     return new long[] { time, memUsed };
   }
 

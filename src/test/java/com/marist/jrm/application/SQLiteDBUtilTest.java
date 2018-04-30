@@ -26,10 +26,11 @@ public class SQLiteDBUtilTest {
     int threadProcID=1;
     int threadMemory=10;
     int procAppID=1;
-    int procMemory=1000;
-    int procThreadCount=2;
+    double procMemory=1000.0;
+    int procThreadCount=0;
+    private static String url = "jdbc:sqlite:src/resources/jrmDB.db";
     String testAppName="DEBUGapp";
-    String testAppDesc="app for debuging";
+    String testAppStatus ="running";
 
     @Test
     public void testInsertThread() {
@@ -40,17 +41,21 @@ public class SQLiteDBUtilTest {
         SQLiteDBInit.initDB();
 
         //System.out.println("inserting app");
-        util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
-        util.insertApplication(testAppName,testAppDesc,sysID);
-        util.insertProcess(1,1000,2);
-        util.insertThread(threadProcID,threadMemory);
 
-        String sql = "SELECT threadID,threadProcID,threadMemory FROM THREAD";
+
 
         try {
-            Connection conn= DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+
+            int testsysId=util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
+            util.insertApplication(testAppName,testAppStatus,testsysId);
+            util.insertProcess(1,1000.0,2,"test proc","Running");
+            util.insertThread(threadProcID,threadMemory);
+
+            String sql = "SELECT threadID,threadProcID,threadMemory FROM THREAD";
+            Connection conn= DriverManager.getConnection(url);
 
             ResultSet rs= conn.createStatement().executeQuery(sql);
+
 
 
 
@@ -84,27 +89,29 @@ public class SQLiteDBUtilTest {
 
 
 
-        //System.out.println("inserting app");
-        util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
 
-
-        util.insertApplication(testAppName,testAppDesc,sysID);
-
-        String sql = "SELECT appID,appName,appDescription FROM APPLICATION";
 
         //System.out.println("enter try");
         try {
-            Connection conn= DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            //System.out.println("inserting app");
+
+            int testsysId=util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
+
+
+            util.insertApplication(testAppName,testAppStatus,testsysId);
+
+            String sql = "SELECT appID,appName,appStatus,appSysID FROM APPLICATION";
+            Connection conn= DriverManager.getConnection(url);
 
             ResultSet rs= conn.createStatement().executeQuery(sql);
 
             assertEquals(testAppName,rs.getString("appName") );
-            assertEquals(testAppDesc,rs.getString("appDescription") );
+            assertEquals(testAppStatus,rs.getString("appStatus") );
             while(rs.next()){
                 if(debug) {
                     System.out.println(rs.getInt("appID") + "\t" +
                             rs.getString("appName") + "\t" +
-                            rs.getString("appDescription") + "\t");
+                            rs.getString("appStatus") + "\t");
                 }
             }
 
@@ -119,28 +126,41 @@ public class SQLiteDBUtilTest {
         System.out.println("testInsertProcess :");
         SQLiteDBUtil util=new SQLiteDBUtil();
         SQLiteDBInit.initDB();
-        util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
-        util.insertApplication("DEBUGapp","app for debuging",sysID);
 
-        util.insertProcess(procAppID,procMemory,procThreadCount);
 
         try {
-            String sql = "SELECT procID,procAppID,procMemory,procThreadCount FROM PROCESS";
-            Connection conn= DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            int testsysId=util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
+            int testprocappId=util.insertApplication("DEBUGapp","app for debuging",testsysId);
+
+            util.insertProcess(testprocappId,procMemory,procThreadCount,"test proc","Running");
+            String sql = "SELECT procID,procAppID,procMemory,procThreadCount,procDesc,procState FROM PROCESS";
+            Connection conn= DriverManager.getConnection(url);
             //Statement stmt = conn.createStatement();
             ResultSet rs= conn.createStatement().executeQuery(sql);
 
-            assertEquals(procAppID,rs.getInt("procAppID") );
-            assertEquals(procMemory,rs.getInt("procMemory") );
-            assertEquals(procThreadCount,rs.getInt("procThreadCount") );
             while(rs.next()){
+
                 System.out.println(rs.getInt("procID")+"\t"+
                         rs.getInt("procAppID")+"\t"+
-                        rs.getInt("procMemory")+"\t"+
-                        rs.getInt("procThreadCount")+"\t");
+                        rs.getDouble("procMemory")+"\t"+
+                        rs.getInt("procThreadCount")+"\t"+
+                        rs.getString("procDesc")+"\t"+
+                        rs.getString("procState")+"\t");
+                assertEquals(testprocappId,rs.getInt("procAppID") );
+                //assertEquals(procMemory,rs.getDouble("procMemory") );
+                assertEquals(procThreadCount,rs.getInt("procThreadCount") );
+                assertEquals("test proc",rs.getString("procDesc") );
+                assertEquals("Running",rs.getString("procState") );
             }
+
+
+
+
         } catch (SQLException e) {
+            e.printStackTrace();
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+
+
         }
 
     }
@@ -150,15 +170,17 @@ public class SQLiteDBUtilTest {
         SQLiteDBUtil util=new SQLiteDBUtil();
         SQLiteDBInit.initDB();
         System.out.println("testInsertSystem :");
-        for(int i=0;i<2;i++) {
-            util.insertSystem(sysTime, sysCPUUsage, sysUptime, sysPhysicalMemory, sysFreeMemory, sysTotalThreads, sysTotalProcesses);
 
-        }
-
-        String sql = "SELECT sysID,sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses FROM SYSTEM";
 
         try {
-            Connection conn= DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            for(int i=0;i<2;i++) {
+
+                util.insertSystem(sysTime, sysCPUUsage, sysUptime, sysPhysicalMemory, sysFreeMemory, sysTotalThreads, sysTotalProcesses);
+
+            }
+
+            String sql = "SELECT sysID,sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses FROM SYSTEM";
+            Connection conn= DriverManager.getConnection(url);
 
             ResultSet rs= conn.createStatement().executeQuery(sql);
 
@@ -184,10 +206,14 @@ public class SQLiteDBUtilTest {
         }
     }
 
+
+
+
     @Test
-    public void testThreadProcessIntegrity() {
+    public void testThreadProcessIntegrity() throws SQLException {
         System.out.println("testThreadProcessIntegrity :");
         SQLiteDBUtil util=new SQLiteDBUtil();
+
 
 
         SQLiteDBInit.initDB();
@@ -195,25 +221,47 @@ public class SQLiteDBUtilTest {
 
 
         //System.out.println("inserting app");
-        util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
+        try {
+            util.insertSystem(sysTime, sysCPUUsage, sysUptime, sysPhysicalMemory, sysFreeMemory, sysTotalThreads, sysTotalProcesses);
 
-        util.insertApplication("DEBUGapp", "app for debuging",sysID);
-        util.insertThread(threadProcID, threadMemory);
+            util.insertApplication("DEBUGapp", "running", sysID);
+            util.insertThread(threadProcID, threadMemory);
+        }
+        catch (SQLException e){
+            //error is not needed dude to chandeling by insert
+            //System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+
+        }
+
+
+
         //util.insertProcess(0,1000,2);
 
 
     }
 
     @Test
-    public void testProcessApplicationIntegrity() {
+    public void testProcessApplicationIntegrity() throws SQLException {
         System.out.println("Test testProcessApplicationIntegrity :");
         SQLiteDBUtil util=new SQLiteDBUtil();
 
 
+
         SQLiteDBInit.initDB();
-        util.insertSystem(sysTime,sysCPUUsage,sysUptime,sysPhysicalMemory,sysFreeMemory,sysTotalThreads,sysTotalProcesses);
-        util.insertProcess(procAppID,procMemory,procThreadCount);
+        try {
+            util.insertSystem(sysTime, sysCPUUsage, sysUptime, sysPhysicalMemory, sysFreeMemory, sysTotalThreads, sysTotalProcesses);
+            util.insertProcess(procAppID, procMemory, procThreadCount,"test proc","Running");
+
+        }
+        catch (SQLException e){
+            //error is not needed dude to chandeling by insert
+            // System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+
+        }
+        //fail(String.format("Expected %s, but no exception was thrown.", throwableClass.getSimpleName()));
+
         //util.insertProcess(0,1000,2);
+
 
 
     }

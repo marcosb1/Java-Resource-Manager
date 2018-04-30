@@ -1,5 +1,6 @@
 package com.marist.jrm.systemCall;
 
+import com.marist.jrm.model.ApplicationModel;
 import com.marist.jrm.model.ProcessModel;
 import org.junit.Test;
 import oshi.SystemInfo;
@@ -8,6 +9,7 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +21,7 @@ public class TestValidProcesses {
   private SystemInfo si = new SystemInfo();
   private HardwareAbstractionLayer hal = si.getHardware();
   private OperatingSystem os = si.getOperatingSystem();
-  ArrayList<ProcessModel> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
+  List<ProcessModel> processes = SystemCallDriver.getProcesses(os, hal.getMemory());
 
   /**
    * Tests to make sure no invalid processes are being entered
@@ -35,6 +37,20 @@ public class TestValidProcesses {
       assertTrue(Double.parseDouble(p.getMemory().substring(0,6)) > 0.0);
     }
 
+  }
+
+  public void printSimpleMetrics() {
+    SystemInfo si = new oshi.SystemInfo();
+
+    HardwareAbstractionLayer hal = si.getHardware();
+    OperatingSystem os = si.getOperatingSystem();
+
+    SystemCallDriver.printBasicInfo(hal.getComputerSystem());
+    List<ProcessModel> procs = SystemCallDriver.getProcesses(os, hal.getMemory());
+
+    List<ApplicationModel> apps = SystemCallDriver.getApplications(procs);
+
+    SystemCallDriver.getCPUUsage(hal);
   }
 
   /**

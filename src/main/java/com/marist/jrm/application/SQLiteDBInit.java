@@ -10,7 +10,9 @@ import java.sql.*;
 public class SQLiteDBInit {
 
     //function that performs the creation of the database tables given pre written queries
+
     public static void initDB() {
+        String url = "jdbc:sqlite:src/resources/jrmDB.db";
         //initialize  variables used during querying of database
         //Connection variable used to connect to the database
         Connection c = null;
@@ -20,7 +22,7 @@ public class SQLiteDBInit {
             //dynamically load sqlite JDBC driver
             Class.forName("org.sqlite.JDBC");
             //setting connection variable to the java-resource-manage db file in src/resources
-            c = DriverManager.getConnection("jdbc:sqlite:src/resources/jrmDB.db");
+            c = DriverManager.getConnection(url);
             // System.out.println("Opened database successfully");
 
             //initialize statement using the JDBC Driver connection
@@ -51,7 +53,7 @@ public class SQLiteDBInit {
                     "CREATE TABLE APPLICATION(" +
                             "appID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "appName           TEXT     NOT NULL," +
-                            "appDescription    TEXT     NOT NULL," +
+                            "appStatus    TEXT     NOT NULL," +
                             "appSysID   INTEGER             NOT NULL," +
                             "FOREIGN KEY(appSysID) REFERENCES SYSTEM(sysID))";
             //execute application table creation
@@ -65,8 +67,10 @@ public class SQLiteDBInit {
                     "CREATE TABLE PROCESS(" +
                             "procID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "procAppID           INTEGER    NOT NULL," +
-                            "procMemory    INTEGER     NOT NULL," +
+                            "procMemory    REAL      NOT NULL," +
                             "procThreadCount INTEGER     NOT NULL," +
+                            "procDesc    TEXT     NOT NULL," +
+                            "procState    TEXT     NOT NULL," +
                             "FOREIGN KEY(procAppID) REFERENCES APPLICATION(appID))";
             //execute Process table creation
             stmt.executeUpdate(sql);
@@ -79,7 +83,7 @@ public class SQLiteDBInit {
                     "CREATE TABLE THREAD(" +
                             "threadID INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "threadProcID INTEGER NOT NULL," +
-                            "threadMemory INTEGER NOT NULL," +
+                            "threadMemory REAL  NOT NULL," +
                             "FOREIGN KEY(threadProcID) REFERENCES PROCESS(procID))";
             //execute Thread table creation
             stmt.executeUpdate(sql);
