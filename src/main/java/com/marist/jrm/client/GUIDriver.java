@@ -51,7 +51,6 @@ public class GUIDriver extends Application {
     private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
     private final int REFRESH_INTERVAL = 1000;
-    private final int BYTES_TO_GB = 1073741824;
 
     private Stage applicationWindow;
     private BorderPane layout;
@@ -204,7 +203,7 @@ public class GUIDriver extends Application {
         this.memoryXAxis.setTickUnit(200000);
 
         this.memoryYAxis.setLowerBound(0);
-        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / this.BYTES_TO_GB);
+        this.memoryYAxis.setUpperBound(this.hal.getMemory().getTotal() / SystemCallDriver.BYTES_PER_GIG);
         this.memoryYAxis.setAutoRanging(false);
         this.memoryYAxis.setTickUnit(4);
 
@@ -296,13 +295,6 @@ public class GUIDriver extends Application {
         List<ApplicationModel> applications = SystemCallDriver
                 .getApplications(SystemCallDriver
                         .getProcesses(this.os, this.hal.getMemory()));
-        // TODO: From there nest Process list in Application model insert into db
-
-
-
-
-
-        // Application TODO
 
         //function used to insert a System into the System table taking in the current system time, syscpuusage, the system uptime, total physical memory, free memory, total number of threads and processes
         double sysTime=0;
@@ -314,8 +306,7 @@ public class GUIDriver extends Application {
         int sysNumProc=os.getProcessCount();
         try {
             int curSysId = SQLiteDBUtil.insertSystem(sysTime, sysUpTime, sysCpuUsage, sysTotalMem, sysFreemem, sysNumThreads, sysNumProc);
-           // List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
-            // TODO: From there nest Process list in Application model insert into db
+
             for (ApplicationModel app : applications) {
                 // update the table on the GUI and database at once to avoid creating two separate for-loops
                 this.setApplicationTableContents(app);
@@ -339,8 +330,8 @@ public class GUIDriver extends Application {
                     for (int i = 0; i< threadCount;i++) {
 
                         int curThreadUsage;
-                        if(procMem%threadCount!=0){
-                            if(i==0){
+                        if (procMem % threadCount != 0){
+                            if (i==0){
                                 curThreadUsage= (int) ((threadCount/threadCount)+procMem%threadCount);
                             }
                             else{

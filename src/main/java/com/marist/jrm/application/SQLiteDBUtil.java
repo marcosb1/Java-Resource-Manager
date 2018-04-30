@@ -1,5 +1,6 @@
 package com.marist.jrm.application;
 
+import com.marist.jrm.client.GUIDriver;
 import org.sqlite.SQLiteConfig;
 
 import java.sql.*;
