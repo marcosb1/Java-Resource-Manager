@@ -1,5 +1,6 @@
 package com.marist.jrm.systemCall;
 
+import com.marist.jrm.model.ApplicationModel;
 import com.marist.jrm.model.ProcessModel;
 import org.junit.Test;
 import oshi.SystemInfo;
@@ -36,6 +37,20 @@ public class TestValidProcesses {
       assertTrue(Double.parseDouble(p.getMemory().substring(0,6)) > 0.0);
     }
 
+  }
+
+  public void printSimpleMetrics() {
+    SystemInfo si = new oshi.SystemInfo();
+
+    HardwareAbstractionLayer hal = si.getHardware();
+    OperatingSystem os = si.getOperatingSystem();
+
+    SystemCallDriver.printBasicInfo(hal.getComputerSystem());
+    List<ProcessModel> procs = SystemCallDriver.getProcesses(os, hal.getMemory());
+
+    List<ApplicationModel> apps = SystemCallDriver.getApplications(procs);
+
+    SystemCallDriver.getCPUUsage(hal);
   }
 
   /**
