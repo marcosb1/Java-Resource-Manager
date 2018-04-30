@@ -4,6 +4,7 @@ import com.marist.jrm.client.GUIDriver;
 import org.sqlite.SQLiteConfig;
 
 import java.sql.*;
+import java.util.logging.Level;
 
 /**
  * Created by Dominic Rossillo on 4/14/2018.
@@ -49,13 +50,9 @@ public class SQLiteDBUtil {
 
         } catch (SQLException e) {
             if (e.getMessage().contains("SQLITE_CONSTRAINT_FOREIGNKEY")) {
-
-                System.out.println("Attempt to add null process reference stopped!");
-
+                GUIDriver.LOGGER.log(Level.SEVERE, "Attempt to add null process reference stopped!");
             } else {
-
-                System.out.println(e.getMessage());
-
+                GUIDriver.LOGGER.log(Level.SEVERE, e.getMessage());
             }
             throw e;
 
@@ -104,10 +101,9 @@ public class SQLiteDBUtil {
 
         } catch (SQLException e) {
             if (e.getMessage().contains("SQLITE_CONSTRAINT_FOREIGNKEY")) {
-                System.out.println("Attempt to add null System reference stopped!");
+                GUIDriver.LOGGER.log(Level.SEVERE, "Attempt to add null System reference stopped!");
             } else {
-
-                System.out.println(e.getMessage());
+                GUIDriver.LOGGER.log(Level.SEVERE, e.getMessage());
             }
             throw e;
         }
@@ -155,12 +151,12 @@ public class SQLiteDBUtil {
             //return the id of the Process created
             return rs.getInt(1);
         } catch (SQLException e) {
-
             if (e.getMessage().contains("SQLITE_CONSTRAINT_FOREIGNKEY")) {
-                System.out.println("Attempt to add null Application reference stopped!");
+                GUIDriver.LOGGER.log(Level.SEVERE, "Attempt to add null Application reference stopped!");
             } else {
-                System.out.println(e.getMessage());
+                GUIDriver.LOGGER.log(Level.SEVERE, e.getMessage());
             }
+
             throw e;
         }
 
@@ -212,7 +208,7 @@ public class SQLiteDBUtil {
 
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            GUIDriver.LOGGER.log(Level.SEVERE, e.getMessage());
             throw e;
         }
 

@@ -45,10 +45,11 @@ import java.util.logging.Logger;
 
 public class GUIDriver extends Application {
 
+    public final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
+
     private TableView<ApplicationModel> applicationsTable;
     private TableView<ProcessModel> processTable;
 
-    private final static Logger LOGGER = Logger.getLogger(GUIDriver.class.getName());
     private final static Level CURRENT_LEVEL = Level.INFO;
     private final int REFRESH_INTERVAL = 1000;
 
@@ -110,10 +111,6 @@ public class GUIDriver extends Application {
 
         /* File Menu initialization and items */
         Menu fileMenu = new Menu("File");
-
-        MenuItem export = new MenuItem("Export...");
-        export.setDisable(false);
-        fileMenu.getItems().add(export);
 
         fileMenu.getItems().add(new SeparatorMenuItem());
 
@@ -326,8 +323,9 @@ public class GUIDriver extends Application {
                     int threadCount = Integer.parseInt(proc.getThreadCount());
                     String procStatus = proc.getState().toString();
                     int procId = SQLiteDBUtil.insertProcess(appID, procMem,threadCount , procDesc, procStatus);
+
                     //loop each thread to insert them and set mem usage to the procmem/n
-                    for (int i = 0; i< threadCount;i++) {
+                    /*for (int i = 0; i< threadCount;i++) {
 
                         int curThreadUsage;
                         if (procMem % threadCount != 0){
@@ -344,7 +342,7 @@ public class GUIDriver extends Application {
                         }
 
                         SQLiteDBUtil.insertThread(procId,curThreadUsage);
-                    }
+                    }*/
 
                 }
 

@@ -1,11 +1,13 @@
 package com.marist.jrm.application;
 
 
+import com.marist.jrm.client.GUIDriver;
 import org.sqlite.SQLiteConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 
 //this class is a generic JDBC driver connection class
@@ -38,7 +40,7 @@ public class SQLiteJDBCDriverConnection {
                     conn.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                GUIDriver.LOGGER.log(Level.SEVERE, ex.getMessage());
             }
         }
         return conn;
