@@ -1,6 +1,7 @@
 package com.marist.jrm.client;
 
 import com.marist.jrm.application.SQLiteDBInit;
+import com.marist.jrm.application.SQLiteDBUtil;
 import com.marist.jrm.client.components.ConfirmBox;
 import com.marist.jrm.model.ApplicationModel;
 import com.marist.jrm.model.MemoryMetrics;
@@ -28,6 +29,7 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -283,14 +285,74 @@ public class GUIDriver extends Application {
         //this.updateCPULineChart(SystemCallDriver.getCPUUsage(this.os, this.hal.getMemory()));
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
+
+
+
+
+
         // Application TODO
-        List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
-        // TODO: From there nest Process list in Application model insert into db
-        for (ApplicationModel app : applications) {
-            List<ProcessModel> appProcesses  = app.getProcesses();
-            // ADD TO DB HERE
+
+        //function used to insert a System into the System table taking in the current system time, syscpuusage, the system uptime, total physical memory, free memory, total number of threads and processes
+        double sysTime=0;
+        double sysUpTime=0;
+        double sysCpuUsage=0;
+        double sysTotalMem=memoryValues.getTotalMemory();
+        double sysFreemem=memoryValues.getMemoryAvailable();
+        int sysNumThreads= os.getThreadCount();
+        int sysNumProc=os.getProcessCount();
+        try {
+            int curSysId = SQLiteDBUtil.insertSystem(sysTime, sysUpTime, sysCpuUsage, sysTotalMem, sysFreemem, sysNumThreads, sysNumProc);
+            List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
+            // TODO: From there nest Process list in Application model insert into db
+            for (ApplicationModel app : applications) {
+                String appName = app.getName();
+                String appStatus = app.getStatus();
+
+
+                //function used to insert a Application into the Application table taking in the Applications name, the applications description , and the  System ID of the parent System
+                int appID = SQLiteDBUtil.insertApplication(appName, appStatus, curSysId);
+
+                List<ProcessModel> appProcesses = app.getProcesses();
+                for (ProcessModel proc : appProcesses) {
+                    double procMem = Double.parseDouble(proc.getMemory());
+                    ArrayList<Integer> procThreads = proc.getThreadUsages();
+                    String procDesc = proc.getDescription();
+                    int threadCount = Integer.parseInt(proc.getThreadCount());
+                    String procStatus = proc.getState().toString();
+                    int procId = SQLiteDBUtil.insertProcess(appID, procMem,threadCount , procDesc, procStatus);
+                    //loop each thread to insert them and set mem usage to the procmem/n
+                    for (int i = 0; i< threadCount;i++) {
+                        
+                        int curThreadUsage;
+                        if(procMem%threadCount!=0){
+                            if(i==0){
+                                curThreadUsage= (int) ((threadCount/threadCount)+procMem%threadCount);
+                            }
+                            else{
+                                curThreadUsage= (int)threadCount/threadCount;
+                            }
+
+                        }
+                        else{
+                            curThreadUsage = (int) (procMem/threadCount);
+                        }
+
+                        SQLiteDBUtil.insertThread(procId,curThreadUsage);
+                    }
+
+                }
+
+            }
 
         }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+            // ADD TO DB HERE
+
+
 
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
