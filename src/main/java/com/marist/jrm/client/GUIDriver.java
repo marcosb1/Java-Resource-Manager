@@ -2,6 +2,8 @@ package com.marist.jrm.client;
 
 import com.marist.jrm.application.SQLiteDBInit;
 import com.marist.jrm.client.components.ConfirmBox;
+import com.marist.jrm.model.ApplicationModel;
+import com.marist.jrm.model.MemoryMetrics;
 import com.marist.jrm.model.ProcessModel;
 import com.marist.jrm.systemCall.SystemCallDriver;
 import javafx.animation.Animation;
@@ -27,6 +29,7 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -265,13 +268,14 @@ public class GUIDriver extends Application {
      */
     public void update() {
         // update process table elements
+        List<ProcessModel> processes = SystemCallDriver.getProcesses(this.os, this.hal.getMemory());
         this.processTable.getItems().clear();
-        this.setProcessTableContents(SystemCallDriver.getProcesses(this.os, this.hal.getMemory()));
+        this.setProcessTableContents(processes);
         // System Call TODO
-        Double[] memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
-        this.setTotalMemoryValue(memoryValues[0]);
-        this.setMemoryUsedValue(memoryValues[1]);
-        this.setMemoryAvailableValue(memoryValues[2]);
+        MemoryMetrics memoryValues = SystemCallDriver.getMemoryMetrics(hal.getMemory());
+        this.setTotalMemoryValue(memoryValues.getTotalMemory());
+        this.setMemoryUsedValue(memoryValues.getMemoryUsed());
+        this.setMemoryAvailableValue(memoryValues.getMemoryAvailable());
         this.setNumThreadsValue(os.getThreadCount());
         this.setNumProcessesValue(os.getProcessCount());
         this.setUpTimeValue(FormatUtil.formatElapsedSecs(hal.getProcessor().getSystemUptime()));
@@ -280,9 +284,13 @@ public class GUIDriver extends Application {
         this.updateMemoryLineChart(SystemCallDriver.getMemoryUsage(this.hal.getMemory()));
 
         // Application TODO
-        // TODO: List of applications for application package
+        List<ApplicationModel> applications = applications = SystemCallDriver.getApplications(processes);
         // TODO: From there nest Process list in Application model insert into db
-        // TODO: Get num threads for that + usages
+        for (ApplicationModel app : applications) {
+            List<ProcessModel> appProcesses  = app.getProcesses();
+            // ADD TO DB HERE
+
+        }
 
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
@@ -305,7 +313,7 @@ public class GUIDriver extends Application {
     /**
      * @param active List containing the active processes to be placed in the table
      */
-    public void setProcessTableContents(ArrayList<ProcessModel> active) {
+    public void setProcessTableContents(List<ProcessModel> active) {
         // Add processes to the table
         for (ProcessModel p : active) {
             this.processTable.getItems().add(p);
