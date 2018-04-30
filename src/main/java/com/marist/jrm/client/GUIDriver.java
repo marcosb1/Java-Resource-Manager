@@ -1,5 +1,6 @@
 package com.marist.jrm.client;
 
+import com.marist.jrm.application.SQLiteDBInit;
 import com.marist.jrm.client.components.ConfirmBox;
 import com.marist.jrm.model.ProcessModel;
 import com.marist.jrm.systemCall.SystemCallDriver;
@@ -19,7 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-
 import javafx.util.Duration;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
@@ -79,6 +79,10 @@ public class GUIDriver extends Application {
         // we should make the application window
         // global to the class, it might make
         // passing variables from scenes easier
+
+        //Start initializing the database tables
+        SQLiteDBInit.initDB();
+
         this.applicationWindow = primaryStage;
         this.applicationWindow.setTitle("Java Resource Manager");
         this.applicationWindow.setOnCloseRequest(e -> {
@@ -150,7 +154,7 @@ public class GUIDriver extends Application {
 
         processTable = new TableView<>();
         processTable.getColumns().addAll(processNameCol, memoryCol, threadCountCol);
-      
+
         processesTab.setContent(processTable);
         tabPane.getTabs().add(processesTab);
 
@@ -283,7 +287,7 @@ public class GUIDriver extends Application {
         // @everyone TODO
         // TODO: Figure out how we're gonna do system time
     }
-  
+
     /**
      * Will commit any left over transactions after prompting the user as to
      * whether they are sure they want to exit the program.
